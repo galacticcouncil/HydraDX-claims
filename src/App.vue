@@ -2,15 +2,14 @@
   <IndexPage />
 </template>
 
-<script>
-import IndexPage from '@/views/index.vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import IndexPage from './views/index.vue';
 
-export default {
+export default defineComponent({
   name: 'App',
   components: {
     IndexPage,
   },
-};
+});
 </script>
-
-<style lang="scss"></style>
