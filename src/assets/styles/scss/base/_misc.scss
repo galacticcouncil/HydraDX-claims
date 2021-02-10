@@ -1,0 +1,42 @@
+.hdx-btn {
+  display: inline-block;
+  background-color: $hdx-light-blue;
+  //border: 5px outset #0c36a1;
+  border: 2px solid $hdx-light-blue;
+  box-shadow: 6px 6px $hdx-bgr-blue;
+  color: $hdx-bgr-blue;
+  text-decoration: none;
+  font-size: 18px;
+  //padding: 0.3em;
+  //margin: 0.3em;
+  vertical-align: middle;
+  white-space: nowrap;
+  padding: 7px 20px 4px 20px;
+
+  &:hover {
+    color: $hdx-light-blue;
+    border-color: $hdx-bgr-blue;
+    background-color: $hdx-bgr-blue;
+    box-shadow: 6px 6px transparent;
+    outline: none;
+    //transform: translate(6px, 6px);
+  }
+}
+
+.hdx-input {
+  background-color: transparent;
+  border-top: 3px inset $hdx-bgr-blue;
+  border-left: 3px inset $hdx-bgr-blue;
+  border-bottom: 3px inset $hdx-light-blue;
+  border-right: 3px inset $hdx-light-blue;
+  box-shadow: none;
+  border-radius: 0;
+  height: 45px;
+  width: 100%;
+  display: block;
+  outline: none;
+  color: $hdx-light-blue;
+  font-size: 16px;
+  padding-left: 10px;
+  padding-right: 10px;
+}

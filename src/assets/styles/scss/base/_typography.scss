@@ -1,0 +1,100 @@
+@font-face {
+  font-family: 'Pexico-Regular';
+  src: url('../../font/Pexico-Regular/font.woff2') format('woff2');
+}
+* {
+  box-sizing: border-box;
+  border-color: #f653a2;
+  border-style: solid;
+  border-width: 0px;
+}
+
+#app {
+  font-family: Pexico-Regular, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: $hdx-light-blue;
+  padding: 30px;
+  height: 100vh;
+}
+
+html,
+body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: $hdx-bgr-blue;
+  color: $hdx-light-blue;
+
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: crosshair;
+  @include crt-effect();
+}
+
+::-webkit-scrollbar {
+  width: auto;
+}
+::-webkit-scrollbar-track {
+  background: $hdx-bgr-blue;
+  border: none;
+  box-shadow: 0 0 0 transparent inset;
+}
+::-webkit-scrollbar-thumb {
+  background: $hdx-pink;
+}
+::selection {
+  background: $hdx-bgr-blue;
+  color: $hdx-pink;
+}
+::-moz-selection {
+  background: $hdx-bgr-blue;
+  color: $hdx-pink;
+}
+
+div {
+  display: block;
+}
+
+a {
+  text-transform: none;
+  transition: $hdx-global-transition;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    text-transform: none;
+    text-decoration: none;
+    transition: $hdx-global-transition;
+  }
+}
+
+a,
+:visited {
+  color: $hdx-light-blue;
+}
+
+button {
+  outline: none;
+  background: transparent;
+  text-decoration: underline;
+}
+
+button,
+input {
+  font-family: Pexico-Regular, sans-serif;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+button:disabled,
+input:disabled {
+  color: #aaa;
+  border-color: #aaa;
+}
