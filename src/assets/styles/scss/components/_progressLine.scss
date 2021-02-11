@@ -1,0 +1,105 @@
+.hdx-progress-line {
+  margin-bottom: 40px;
+  height: 25px;
+
+  .step-point {
+    flex: 1;
+    position: relative;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      border: 7px solid $hdx-light-blue;
+      background-color: $hdx-blue;
+      border-radius: 100px;
+      left: 0;
+      right: 0;
+      top: 0;
+      margin-left: auto;
+      margin-right: auto;
+      z-index: 3;
+    }
+
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 3px;
+      background-color: $hdx-light-blue;
+      left: 50%;
+      top: 11px;
+      z-index: 2;
+    }
+
+    &:last-of-type {
+      &:after {
+        content: none;
+      }
+    }
+  }
+
+  .progress-line-inner-container {
+    display: flex;
+    align-items: center;
+
+    &.current-step-0 {
+      .step-0 {
+        &:before {
+          border-color: $hdx-pink;
+        }
+        //&:after {
+        //  background-color: $hdx-pink;
+        //}
+      }
+    }
+    &.current-step-1 {
+      .step-0,
+      .step-1 {
+        &:before {
+          border-color: $hdx-pink;
+        }
+      }
+      .step-0 {
+        &:after {
+          background-color: $hdx-pink;
+        }
+      }
+    }
+    &.current-step-2 {
+      .step-0,
+      .step-1,
+      .step-2 {
+        &:before {
+          border-color: $hdx-pink;
+        }
+      }
+      .step-0,
+      .step-1 {
+        &:after {
+          background-color: $hdx-pink;
+        }
+      }
+    }
+    &.current-step-3 {
+      .step-0,
+      .step-1,
+      .step-2,
+      .step-3 {
+        &:before {
+          border-color: $hdx-pink;
+        }
+      }
+      .step-0,
+      .step-1,
+      .step-2 {
+        &:after {
+          background-color: $hdx-pink;
+        }
+      }
+    }
+  }
+}

@@ -21,6 +21,19 @@
     outline: none;
     //transform: translate(6px, 6px);
   }
+
+  &.disabled {
+    box-shadow: 6px 6px transparent;
+    border: 2px solid $hdx-light-blue;
+    background-color: transparent;
+    color: $hdx-light-blue;
+    pointer-events: none;
+
+    &:hover {
+      //cursor: not-allowed;
+
+    }
+  }
 }
 
 .hdx-input {
@@ -39,4 +52,5 @@
   font-size: 16px;
   padding-left: 10px;
   padding-right: 10px;
+  text-align: center;
 }

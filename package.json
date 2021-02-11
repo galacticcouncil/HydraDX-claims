@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "metamask-extension-provider": "^3.0.0",
     "sanitize.css": "^12.0.1",
     "vue": "^3.0.0"
   },
