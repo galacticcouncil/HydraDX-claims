@@ -30,6 +30,8 @@ export const getTokenBalanceByAddress: (
     return addressBalance;
   } catch (e) {
     console.log(e);
-    return 0;
+    return -1;
   }
 };
+
+

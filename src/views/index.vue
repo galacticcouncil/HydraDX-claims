@@ -12,91 +12,50 @@
           <div class="wizard-progress-status">
             <ProgressLine :step="wizardState.wizardStep" />
           </div>
-
-          <div
+          <WizardStep1
             v-if="wizardState.wizardStep === 0"
-            class="wizard-step-container step-0"
-          >
-            <div v-if="xhdxBalanceFormatted >= 0" class="text-label">
-              Owned Balance: {{ xhdxBalanceFormatted }} xHDX
-            </div>
-
-            <a
-              v-if="ethAccountData.connectedAccount.length === 0"
-              class="hdx-btn connect-metamask"
-              :class="{
-                disabled: ethAccountData.manuallyEnteredAccount.length > 0,
-              }"
-              href="#"
-              @click.prevent="onConnectMetamaskClick"
-              >Connect Metamask</a
-            >
-            <div
-              v-if="ethAccountData.connectedAccount.length > 0"
-              class="selected-account-view eth-account"
-            >
-              {{ ethAccountData.connectedAccount }}
-            </div>
-
-            <div
-              v-if="ethAccountData.connectedAccount.length === 0"
-              class="text-label"
-            >
-              Or Enter your ETH address
-            </div>
-
-            <input
-              v-if="ethAccountData.connectedAccount.length === 0"
-              type="text"
-              class="hdx-input eth-addres"
-              placeholder="ETH address"
-              v-model="ethAccountData.manuallyEnteredAccount"
-            />
-
-            <a
-              v-if="
-                ethAccountData.manuallyEnteredAccount.length > 0 &&
-                !ethAccountData.connectedAccount
-              "
-              class="hdx-btn next-step"
-              :class="{ disabled: !ethAccountData.manuallyEnteredAccountValid }"
-              href="#"
-              @click.prevent="connectEthAccount"
-              >Connect
-              <span>&#10145;</span>
-            </a>
-
-            <a
-              v-else
-              class="hdx-btn next-step"
-              :class="{ disabled: !isNextStepValid }"
-              href="#"
-              @click.prevent="nextStepClick"
-              >Next
-              <span>&#10145;</span>
-            </a>
-          </div>
+            :wizard-state="wizardState"
+            :eth-account-data="ethAccountData"
+            :on-connect-eth-account="onConnectEthAccount"
+            :is-next-step-valid="isNextStepValid"
+            :on-connect-metamask="onConnectMetamask"
+            :next-step-click="nextStepClick"
+          />
+          <WizardStep2
+            v-if="wizardState.wizardStep === 1"
+            :wizard-state="wizardState"
+            :eth-account-data="ethAccountData"
+            :hdx-account-data="hdxAccountData"
+            :on-connect-hdx-account="onConnectHdxAccount"
+            :is-next-step-valid="isNextStepValid"
+            :next-step-click="nextStepClick"
+          />
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, onMounted, reactive, computed, watch } from 'vue';
 
-import ProgressLine from '@/components/ProgressLine';
-import {
-  initWeb3Instance,
-  getWeb3Instance,
-  getTokenBalanceByAddress,
-} from '@/services/blockchianUtils';
+import ProgressLine from '@/components/ProgressLine.vue';
+import WizardStep1 from '@/components/WizardStep1.vue';
+import WizardStep2 from '@/components/WizardStep2.vue';
+import { initWeb3Instance, getWeb3Instance } from '@/services/blockchianUtils';
+import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
-import { getFormattedBalanceXhdx } from '@/services/utils';
+interface HdxAccountData {
+  isPolkadotExtAvailable: boolean;
+  connectedAccount: InjectedAccountWithMeta | null;
+  hdxBalance: number;
+}
 
 export default defineComponent({
   components: {
     ProgressLine,
+    WizardStep1,
+    WizardStep2,
   },
   setup() {
     initWeb3Instance();
@@ -107,34 +66,26 @@ export default defineComponent({
       web3Inst: getWeb3Instance(),
     });
     const ethAccountData = reactive({
+      isMetamaskAvailable: false,
       connectedAccount: '',
-      manuallyEnteredAccount: '',
-      manuallyEnteredAccountValid: false,
       xhdxBalance: -1,
     });
+    const hdxAccountData = reactive({
+      isPolkadotExtAvailable: false,
+      connectedAccount: null,
+      hdxBalance: -1,
+    } as HdxAccountData);
 
-    const xhdxBalanceFormatted = computed(() => {
-      if (ethAccountData.xhdxBalance >= 0) {
-        return getFormattedBalanceXhdx(ethAccountData.xhdxBalance);
-      }
-      return -1;
-    });
-
-    console.log(wizardState.web3Inst);
-
-    watch(
-      () => ethAccountData.manuallyEnteredAccount,
-      newVal => {
-        ethAccountData.manuallyEnteredAccountValid = !!wizardState.web3Inst.utils.isAddress(
-          newVal
-        );
-        console.log(!!wizardState.web3Inst.utils.isAddress(newVal));
-      }
-    );
     watch(
       () => ethAccountData.xhdxBalance,
       newVal => {
         wizardState.stepValidationStatus[0] = newVal >= 0;
+      }
+    );
+    watch(
+      () => hdxAccountData.connectedAccount,
+      newVal => {
+        wizardState.stepValidationStatus[1] = !!newVal;
       }
     );
 
@@ -142,44 +93,55 @@ export default defineComponent({
       return wizardState.stepValidationStatus[wizardState.wizardStep];
     });
 
-    const onConnectMetamaskClick = async () => {
-      try {
-        const account = await window.ethereum.request({
-          method: 'eth_requestAccounts',
-        });
-        console.log('accounts- ', account);
-        ethAccountData.xhdxBalance = await getTokenBalanceByAddress(account[0]);
-        ethAccountData.connectedAccount = account[0];
-      } catch (e) {
-        console.log(e);
-      }
+    const onConnectMetamask = async (account: string, xhdxBalance: number) => {
+      console.log('account - ', account);
+      console.log('xhdxBalance - ', xhdxBalance);
+      ethAccountData.xhdxBalance = xhdxBalance;
+      ethAccountData.connectedAccount = account;
     };
 
-    const connectEthAccount = async () => {
-      if (ethAccountData.manuallyEnteredAccountValid) {
-        ethAccountData.xhdxBalance = await getTokenBalanceByAddress(
-          ethAccountData.manuallyEnteredAccount
-        );
-        ethAccountData.connectedAccount = ethAccountData.manuallyEnteredAccount;
-      }
+    const onConnectEthAccount = async (
+      account: string,
+      xhdxBalance: number
+    ) => {
+      console.log('account - ', account);
+      console.log('xhdxBalance - ', xhdxBalance);
+      ethAccountData.xhdxBalance = xhdxBalance;
+      ethAccountData.connectedAccount = account;
+    };
+    const onConnectHdxAccount = async (
+      account: InjectedAccountWithMeta,
+      hdxBalance: number
+    ) => {
+      console.log('account - ', account);
+      console.log('hdxBalance - ', hdxBalance);
+      hdxAccountData.hdxBalance = hdxBalance;
+      hdxAccountData.connectedAccount = account;
     };
     const nextStepClick = () => {
       wizardState.wizardStep++;
     };
 
     onMounted(() => {
-      if (typeof window.ethereum !== 'undefined') {
-        console.log('MetaMask is installed!', window.ethereum.isMetaMask);
+      if (
+        // @ts-ignore
+        typeof window.ethereum !== 'undefined' &&
+        // @ts-ignore
+        window.ethereum.isMetaMask
+      ) {
+        // console.log('MetaMask is installed!', window.ethereum.isMetaMask);
+        ethAccountData.isMetamaskAvailable = true;
       }
     });
 
     return {
-      onConnectMetamaskClick,
       wizardState,
-      isNextStepValid,
       ethAccountData,
-      xhdxBalanceFormatted,
-      connectEthAccount,
+      hdxAccountData,
+      isNextStepValid,
+      onConnectMetamask,
+      onConnectEthAccount,
+      onConnectHdxAccount,
       nextStepClick,
     };
   },

@@ -8,6 +8,8 @@
     "dev": "vue-cli-service serve"
   },
   "dependencies": {
+    "@polkadot/api": "^3.8.1",
+    "@polkadot/extension-dapp": "^0.37.1",
     "bignumber.js": "^9.0.1",
     "core-js": "^3.6.5",
     "metamask-extension-provider": "^3.0.0",
