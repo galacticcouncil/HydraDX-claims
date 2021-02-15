@@ -88,6 +88,10 @@ import {
   getFormattedBalanceXhdx,
   getPolkadotFormattedAddress,
 } from '@/services/utils';
+import {
+  getPolkadotIdentityBalanceByAddress,
+  initPolkadotApiInstance,
+} from '@/services/polkadotUtils';
 import { web3Enable, web3Accounts } from '@polkadot/extension-dapp';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
@@ -148,8 +152,9 @@ export default defineComponent({
     //     );
     //   }
     // );
-    onMounted(() => {
+    onMounted(async () => {
       console.log('onMounted');
+      await initPolkadotApiInstance();
     });
 
     const xhdxBalanceFormatted = computed(() => {
@@ -204,8 +209,13 @@ export default defineComponent({
           : account;
     };
 
-    const connectPdAccount = () => {
+    const connectPdAccount = async () => {
       if (!step2State.selectedAccount) return;
+
+      const balance = await getPolkadotIdentityBalanceByAddress(
+        step2State.selectedAccount.address
+      );
+      console.log(balance);
 
       props.onConnectHdxAccount(step2State.selectedAccount, 0);
     };

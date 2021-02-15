@@ -63,7 +63,7 @@
 <script lang="ts">
 import { defineComponent, computed, watch, reactive } from 'vue';
 import { getFormattedBalanceXhdx } from '@/services/utils';
-import { getTokenBalanceByAddress } from '@/services/blockchianUtils';
+import { getTokenBalanceByAddress } from '@/services/ethUtils';
 
 export default defineComponent({
   name: 'WizardStep1',

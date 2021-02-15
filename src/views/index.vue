@@ -30,6 +30,15 @@
             :is-next-step-valid="isNextStepValid"
             :next-step-click="nextStepClick"
           />
+          <WizardStep3
+            v-if="wizardState.wizardStep === 2"
+            :wizard-state="wizardState"
+            :eth-account-data="ethAccountData"
+            :hdx-account-data="hdxAccountData"
+            :on-connect-hdx-account="onConnectHdxAccount"
+            :is-next-step-valid="isNextStepValid"
+            :next-step-click="nextStepClick"
+          />
         </div>
       </div>
     </div>
@@ -42,9 +51,21 @@ import { defineComponent, onMounted, reactive, computed, watch } from 'vue';
 import ProgressLine from '@/components/ProgressLine.vue';
 import WizardStep1 from '@/components/WizardStep1.vue';
 import WizardStep2 from '@/components/WizardStep2.vue';
-import { initWeb3Instance, getWeb3Instance } from '@/services/blockchianUtils';
+import WizardStep3 from '@/components/WizardStep3.vue';
+import { initWeb3Instance, getWeb3Instance } from '@/services/ethUtils';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
+import Web3 from 'web3';
 
+interface WizardState {
+  wizardStep: number;
+  stepValidationStatus: boolean[];
+  web3Inst: Web3;
+}
+interface EthAccountData {
+  isMetamaskAvailable: boolean;
+  connectedAccount: string;
+  xhdxBalance: number;
+}
 interface HdxAccountData {
   isPolkadotExtAvailable: boolean;
   connectedAccount: InjectedAccountWithMeta | null;
@@ -56,20 +77,23 @@ export default defineComponent({
     ProgressLine,
     WizardStep1,
     WizardStep2,
+    WizardStep3,
   },
   setup() {
     initWeb3Instance();
 
     const wizardState = reactive({
       wizardStep: 0,
-      stepValidationStatus: [false, false, false, false],
+      stepValidationStatus: [false, false, true, false],
       web3Inst: getWeb3Instance(),
-    });
+    } as WizardState);
+
     const ethAccountData = reactive({
       isMetamaskAvailable: false,
       connectedAccount: '',
       xhdxBalance: -1,
-    });
+    } as EthAccountData);
+
     const hdxAccountData = reactive({
       isPolkadotExtAvailable: false,
       connectedAccount: null,

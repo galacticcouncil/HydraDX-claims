@@ -10,7 +10,9 @@
   "dependencies": {
     "@polkadot/api": "^3.8.1",
     "@polkadot/extension-dapp": "^0.37.1",
+    "@types/clipboard": "^2.0.1",
     "bignumber.js": "^9.0.1",
+    "clipboard": "^2.0.6",
     "core-js": "^3.6.5",
     "metamask-extension-provider": "^3.0.0",
     "sanitize.css": "^12.0.1",
