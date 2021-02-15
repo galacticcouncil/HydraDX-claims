@@ -39,6 +39,7 @@
             :is-next-step-valid="isNextStepValid"
             :next-step-click="nextStepClick"
           />
+          <WizardStep4 v-if="wizardState.wizardStep === 3" />
         </div>
       </div>
     </div>
@@ -52,6 +53,7 @@ import ProgressLine from '@/components/ProgressLine.vue';
 import WizardStep1 from '@/components/WizardStep1.vue';
 import WizardStep2 from '@/components/WizardStep2.vue';
 import WizardStep3 from '@/components/WizardStep3.vue';
+import WizardStep4 from '@/components/WizardStep4.vue';
 import { initWeb3Instance, getWeb3Instance } from '@/services/ethUtils';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import Web3 from 'web3';
@@ -78,6 +80,7 @@ export default defineComponent({
     WizardStep1,
     WizardStep2,
     WizardStep3,
+    WizardStep4,
   },
   setup() {
     initWeb3Instance();

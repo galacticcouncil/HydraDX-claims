@@ -201,6 +201,27 @@
       }
 
     }
+
+    .success-message-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .success-icon {
+        background-color: $hdx-light-blue;
+        width: 100px;
+        height: 100px;
+        border-radius: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
+
+        img {
+          width: 50px;
+        }
+      }
+    }
   }
 }
 
