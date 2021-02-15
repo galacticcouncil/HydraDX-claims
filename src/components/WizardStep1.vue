@@ -1,5 +1,5 @@
 <template>
-  <div class="wizard-step-container step-0">
+  <div class="wizard-step-container step-1">
     <div v-if="xhdxBalanceFormatted >= 0" class="text-label">
       Owned Balance: {{ xhdxBalanceFormatted }} xHDX
     </div>

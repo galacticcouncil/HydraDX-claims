@@ -1,5 +1,5 @@
 <template>
-  <div class="wizard-step-container step-2">
+  <div class="wizard-step-container step-3">
     <div class="sign-address-container">
       <div class="copy-action-btn">
         <img v-show="!step3State.copied" :src="copyIconSrc" alt="Copy" />

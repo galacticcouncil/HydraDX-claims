@@ -13,7 +13,7 @@
             <ProgressLine :step="wizardState.wizardStep" />
           </div>
           <WizardStep1
-            v-if="wizardState.wizardStep === 0"
+            v-if="wizardState.wizardStep === 1"
             :wizard-state="wizardState"
             :eth-account-data="ethAccountData"
             :on-connect-eth-account="onConnectEthAccount"
@@ -22,15 +22,6 @@
             :next-step-click="nextStepClick"
           />
           <WizardStep2
-            v-if="wizardState.wizardStep === 1"
-            :wizard-state="wizardState"
-            :eth-account-data="ethAccountData"
-            :hdx-account-data="hdxAccountData"
-            :on-connect-hdx-account="onConnectHdxAccount"
-            :is-next-step-valid="isNextStepValid"
-            :next-step-click="nextStepClick"
-          />
-          <WizardStep3
             v-if="wizardState.wizardStep === 2"
             :wizard-state="wizardState"
             :eth-account-data="ethAccountData"
@@ -39,7 +30,16 @@
             :is-next-step-valid="isNextStepValid"
             :next-step-click="nextStepClick"
           />
-          <WizardStep4 v-if="wizardState.wizardStep === 3" />
+          <WizardStep3
+            v-if="wizardState.wizardStep === 3"
+            :wizard-state="wizardState"
+            :eth-account-data="ethAccountData"
+            :hdx-account-data="hdxAccountData"
+            :on-connect-hdx-account="onConnectHdxAccount"
+            :is-next-step-valid="isNextStepValid"
+            :next-step-click="nextStepClick"
+          />
+          <WizardStep4 v-if="wizardState.wizardStep === 4" />
         </div>
       </div>
     </div>
@@ -86,7 +86,7 @@ export default defineComponent({
     initWeb3Instance();
 
     const wizardState = reactive({
-      wizardStep: 0,
+      wizardStep: 1,
       stepValidationStatus: [false, false, true, false],
       web3Inst: getWeb3Instance(),
     } as WizardState);
@@ -117,7 +117,7 @@ export default defineComponent({
     );
 
     const isNextStepValid = computed(() => {
-      return wizardState.stepValidationStatus[wizardState.wizardStep];
+      return wizardState.stepValidationStatus[wizardState.wizardStep - 1];
     });
 
     const onConnectMetamask = async (account: string, xhdxBalance: number) => {

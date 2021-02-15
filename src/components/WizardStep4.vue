@@ -1,5 +1,5 @@
 <template>
-  <div class="wizard-step-container step-3">
+  <div class="wizard-step-container step-4">
     <div class="success-message-container">
       <div class="success-icon">
         <img :src="checkedIconSrc" alt="Success" />

@@ -46,8 +46,8 @@
     display: flex;
     align-items: center;
 
-    &.current-step-0 {
-      .step-0 {
+    &.current-step-1 {
+      .step-1 {
         &:before {
           border-color: $hdx-pink;
         }
@@ -56,28 +56,13 @@
         //}
       }
     }
-    &.current-step-1 {
-      .step-0,
-      .step-1 {
-        &:before {
-          border-color: $hdx-pink;
-        }
-      }
-      .step-0 {
-        &:after {
-          background-color: $hdx-pink;
-        }
-      }
-    }
     &.current-step-2 {
-      .step-0,
       .step-1,
       .step-2 {
         &:before {
           border-color: $hdx-pink;
         }
       }
-      .step-0,
       .step-1 {
         &:after {
           background-color: $hdx-pink;
@@ -85,7 +70,6 @@
       }
     }
     &.current-step-3 {
-      .step-0,
       .step-1,
       .step-2,
       .step-3 {
@@ -93,9 +77,25 @@
           border-color: $hdx-pink;
         }
       }
-      .step-0,
       .step-1,
       .step-2 {
+        &:after {
+          background-color: $hdx-pink;
+        }
+      }
+    }
+    &.current-step-4 {
+      .step-1,
+      .step-2,
+      .step-3,
+      .step-4 {
+        &:before {
+          border-color: $hdx-pink;
+        }
+      }
+      .step-1,
+      .step-2,
+      .step-3 {
         &:after {
           background-color: $hdx-pink;
         }

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="wizard-step-container step-1"
+    class="wizard-step-container step-2"
     v-show="
       (step2State.allAvailableAccounts.length === 0 &&
         !hdxAccountData.connectedAccount) ||
