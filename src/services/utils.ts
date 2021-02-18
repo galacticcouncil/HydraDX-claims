@@ -17,13 +17,29 @@ const polkadotAddressPrefixes: { [key: string]: number } = {
   robonomics: 32,
   centrifuge: 36,
   substrate: 42,
+  hydradx: 63,
 };
 
-export const getFormattedBalanceXhdx: (
-  rawBalance: number
-) => string = rawBalance => {
+export const getFormattedBalance: (
+  rawBalance: number | string,
+  toDecimal?: boolean
+) => string = (rawBalance, toDecimal = false) => {
   const bnBalance = new BigNumber(rawBalance);
-  return bnBalance.div(1000000000000).decimalPlaces(3).toString();
+
+  console.log('rawBalance - ', rawBalance, toDecimal);
+  console.log(
+    'rawBalance.toString - ',
+    bnBalance.div(1000000000000).decimalPlaces(4).toString()
+  );
+  if (toDecimal)
+    return bnBalance.div(1000000000000).decimalPlaces(4).toString();
+
+  return bnBalance.decimalPlaces(4).toString();
+};
+
+export const isValueZero: (rawAmount: string) => boolean = rawAmount => {
+  const bnAmount = new BigNumber(rawAmount);
+  return bnAmount.isZero();
 };
 
 export const getPolkadotFormattedAddress: (

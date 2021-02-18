@@ -80,6 +80,21 @@
     -moz-box-shadow: 10px 10px 0px -2px rgba($hdx-bgr-blue, 1);
     box-shadow: 10px 10px 0px -2px rgba($hdx-bgr-blue, 1);
 
+    .loading-cover-message {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba($hdx-blue, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: $hdx-light-blue;
+      font-size: 14px;
+      z-index: 5;
+    }
+
     .next-step {
       margin-top: 40px;
       width: 100%;
@@ -174,7 +189,7 @@
       margin-bottom: 30px;
     }
 
-    .sign-address-container {
+    .sign-message-container {
       position: relative;
 
       .copy-action-btn {
@@ -189,10 +204,10 @@
 
       }
 
-      .sign-address {
+      .sign-message {
         background-color: $hdx-light-blue;
         color: $hdx-blue;
-        font-size: 20px;
+        font-size: 17px;
         padding: 25px;
         width: 100%;
         height: 150px;

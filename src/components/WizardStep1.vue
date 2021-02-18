@@ -62,8 +62,8 @@
 
 <script lang="ts">
 import { defineComponent, computed, watch, reactive } from 'vue';
-import { getFormattedBalanceXhdx } from '@/services/utils';
-import { getTokenBalanceByAddress } from '@/services/ethUtils';
+import { getFormattedBalance } from '@/services/utils';
+import { getXhdxBalanceByAddress } from '@/services/ethUtils';
 
 export default defineComponent({
   name: 'WizardStep1',
@@ -85,10 +85,6 @@ export default defineComponent({
       default: () => {},
     },
     onConnectEthAccount: {
-      type: Function,
-      default: () => {},
-    },
-    onConnectMetamask: {
       type: Function,
       default: () => {},
     },
@@ -114,7 +110,7 @@ export default defineComponent({
 
     const xhdxBalanceFormatted = computed(() => {
       if (props.ethAccountData.xhdxBalance >= 0) {
-        return getFormattedBalanceXhdx(props.ethAccountData.xhdxBalance);
+        return getFormattedBalance(props.ethAccountData.xhdxBalance);
       }
       return -1;
     });
@@ -125,8 +121,7 @@ export default defineComponent({
         const account = await window.ethereum.request({
           method: 'eth_requestAccounts',
         });
-        const balance = await getTokenBalanceByAddress(account[0]);
-        props.onConnectMetamask(account[0], balance);
+        props.onConnectEthAccount(account[0]);
       } catch (e) {
         console.log(e);
         //TODO add error handler
@@ -135,14 +130,9 @@ export default defineComponent({
 
     const onConnectEthAccountClick = async () => {
       if (step1State.manuallyEnteredAccountValid) {
-        const balance = await getTokenBalanceByAddress(
-          step1State.manuallyEnteredAccount
-        );
-        if (balance >= 0) {
-          props.onConnectEthAccount(step1State.manuallyEnteredAccount, balance);
-        } else {
-          //TODO add error handler
-        }
+        props.onConnectEthAccount(step1State.manuallyEnteredAccount);
+      } else {
+        //TODO add error handler
       }
     };
 

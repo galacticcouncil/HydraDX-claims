@@ -16,12 +16,13 @@
     <a
       v-if="!hdxAccountData.connectedAccount"
       class="hdx-btn connect-metamask"
+      :class="{ disabled: ethAccountData.isClaimableHdxAmountZero }"
       href="#"
       @click.prevent="onConnectPolkadotExtClick"
       >Connect Polkadot.js</a
     >
-    <div v-if="hdxBalanceFormatted >= 0" class="text-label">
-      Owned Balance: {{ hdxBalanceFormatted }} HDX
+    <div v-if="hdxAccountData.connectedAccount" class="text-label">
+      Owned Balance: {{ hdxOwnedBalanceFormatted }} HDX
     </div>
     <div
       v-if="hdxAccountData.connectedAccount"
@@ -35,12 +36,15 @@
       }}
     </div>
 
+    <div class="text-label">
+      HDX to Claim: {{ hdxClaimableAmountFormatted }} HDX
+    </div>
     <a
       class="hdx-btn next-step"
       :class="{ disabled: !isNextStepValid }"
       href="#"
       @click.prevent="nextStepClick"
-      >Claim
+      >Next
       <span>&#10145;</span>
     </a>
   </div>
@@ -68,7 +72,7 @@
           {{ account.meta.name }}
         </div>
         <div class="address">
-          {{ getPolkadotFormattedAddress(account.address, 'polkadot') }}
+          {{ getPolkadotFormattedAddress(account.address, 'hydradx') }}
         </div>
       </div>
     </div>
@@ -85,12 +89,12 @@
 <script lang="ts">
 import { defineComponent, computed, reactive, onMounted } from 'vue';
 import {
-  getFormattedBalanceXhdx,
+  getFormattedBalance,
   getPolkadotFormattedAddress,
 } from '@/services/utils';
 import {
   getPolkadotIdentityBalanceByAddress,
-  initPolkadotApiInstance,
+  getClaimableHdxAmountByAddress,
 } from '@/services/polkadotUtils';
 import { web3Enable, web3Accounts } from '@polkadot/extension-dapp';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
@@ -100,6 +104,7 @@ interface Step2State {
   isPDExtensionApproved: boolean;
   selectedAccount: InjectedAccountWithMeta | null;
   allAvailableAccounts: InjectedAccountWithMeta[];
+  claimableHdxAmount: string | null;
 }
 
 export default defineComponent({
@@ -127,6 +132,10 @@ export default defineComponent({
       type: Function,
       default: () => {},
     },
+    onFetchClaimableHdxAmount: {
+      type: Function,
+      default: () => {},
+    },
     nextStepClick: {
       type: Function,
       default: () => {},
@@ -142,6 +151,7 @@ export default defineComponent({
       isPDExtensionApproved: false,
       selectedAccount: null,
       allAvailableAccounts: [],
+      claimableHdxAmount: null,
     } as Step2State);
 
     // watch(
@@ -152,22 +162,39 @@ export default defineComponent({
     //     );
     //   }
     // );
+
     onMounted(async () => {
-      console.log('onMounted');
-      await initPolkadotApiInstance();
+      // step2State.claimableHdxAmount = await getClaimableHdxAmountByAddress(
+      //   props.ethAccountData.connectedAccount
+      // );
+      props.onFetchClaimableHdxAmount(
+        await getClaimableHdxAmountByAddress(
+          props.ethAccountData.connectedAccount
+        )
+      );
+    });
+
+    const hdxClaimableAmountFormatted = computed(() => {
+      if (!props.ethAccountData.isClaimableHdxAmountZero) {
+        return getFormattedBalance(
+          props.ethAccountData.claimableHdxAmount,
+          true
+        );
+      }
+      return '0';
     });
 
     const xhdxBalanceFormatted = computed(() => {
       if (props.ethAccountData.xhdxBalance >= 0) {
-        return getFormattedBalanceXhdx(props.ethAccountData.xhdxBalance);
+        return getFormattedBalance(props.ethAccountData.xhdxBalance);
       }
       return -1;
     });
-    const hdxBalanceFormatted = computed(() => {
-      // if (props.ethAccountData.xhdxBalance >= 0) {
-      //   return getFormattedBalanceXhdx(props.ethAccountData.xhdxBalance);
-      // }
-      return -1;
+    const hdxOwnedBalanceFormatted = computed(() => {
+      if (props.ethAccountData.hdxOwnedBalance) {
+        return getFormattedBalance(props.ethAccountData.hdxOwnedBalance);
+      }
+      return '0';
     });
 
     const onConnectPolkadotExtClick = async () => {
@@ -226,7 +253,8 @@ export default defineComponent({
       selectPdAccount,
       connectPdAccount,
       xhdxBalanceFormatted,
-      hdxBalanceFormatted,
+      hdxClaimableAmountFormatted,
+      hdxOwnedBalanceFormatted,
       getPolkadotFormattedAddress,
     };
   },
