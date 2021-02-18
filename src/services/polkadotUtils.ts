@@ -258,7 +258,7 @@ export const claimBalance: (
 
   try {
     const claimResponse = await polkadotApiInstance.tx.claims
-      .claim(sign.replace('0x', ''))
+      .claim(sign)
       .signAndSend(
         account,
         { signer: signer },
