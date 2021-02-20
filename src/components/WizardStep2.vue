@@ -96,7 +96,8 @@ import {
   getPolkadotIdentityBalanceByAddress,
   getClaimableHdxAmountByAddress,
 } from '@/services/polkadotUtils';
-import { web3Enable, web3Accounts } from '@polkadot/extension-dapp';
+import { initPolkadotExtension } from '@/services/polkadotExtension';
+import { web3Accounts } from '@polkadot/extension-dapp';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
 interface Step2State {
@@ -198,32 +199,33 @@ export default defineComponent({
     });
 
     const onConnectPolkadotExtClick = async () => {
-      let allInjected = [];
-
-      try {
-        allInjected = await web3Enable('CLAIM.HYDRA.DX');
-
-        if (allInjected && allInjected.length > 0) {
-          step2State.isPDExtensionApproveWaiting = false;
-          step2State.isPDExtensionApproved = true;
-        } else {
+      let allInjected = await initPolkadotExtension(
+        extInstance => {
+          if (extInstance && extInstance.length > 0) {
+            step2State.isPDExtensionApproveWaiting = false;
+            step2State.isPDExtensionApproved = true;
+          } else {
+            step2State.isPDExtensionApproveWaiting = false;
+            step2State.isPDExtensionApproved = false;
+            return;
+            //TODO add reject notice
+          }
+        },
+        () => {
           step2State.isPDExtensionApproveWaiting = false;
           step2State.isPDExtensionApproved = false;
-          return;
           //TODO add reject notice
+          return;
         }
-      } catch (e) {
-        console.log(e);
-        step2State.isPDExtensionApproveWaiting = false;
-        step2State.isPDExtensionApproved = false;
-        //TODO add reject notice
-        return;
-      }
+      );
+
+      if (!allInjected) return;
 
       const allAccounts = await web3Accounts();
 
       console.log('allInjected - ', allInjected);
       console.log('allAccounts - ', allAccounts);
+      // await allInjected.extensions[0].update();
 
       step2State.allAvailableAccounts = allAccounts;
     };
