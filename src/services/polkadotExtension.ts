@@ -1,12 +1,14 @@
 import {
+  InjectedAccountWithMeta,
   InjectedExtension,
   InjectedMetadataKnown,
   MetadataDef,
 } from '@polkadot/extension-inject/types';
-import { web3Enable } from '@polkadot/extension-dapp';
+import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import { ApiPromise } from '@polkadot/api';
-import { reactive, watch } from 'vue';
+import { reactive, unref } from 'vue';
 import { getPolkadotApiInstance } from '@/services/polkadotUtils';
+import { getSpecTypes } from '@polkadot/types-known';
 
 interface ExtensionKnown {
   extension: InjectedExtension;
@@ -42,6 +44,7 @@ interface SavedProperties {
 const extStore = reactive({
   extensions: [] as ExtensionKnown[],
   properties: {} as SavedProperties,
+  genesisHash: '' as string,
 });
 
 // function triggerAll(): void {
@@ -170,63 +173,80 @@ async function getKnown(
   return all.filter((info): info is ExtensionKnown => !!info);
 }
 
-// const EMPTY_STATE = { count: 0, extensions: [] };
-
-// export function useExtensions(): Extensions {
-//   const { api, extensions, isApiReady, isDevelopment } = useApi();
-//   const [all, setAll] = useState<ExtensionKnown[] | undefined>();
-//   const [trigger, setTrigger] = useState(0);
-//
-//   useEffect((): (() => void) => {
-//     const myId = `${++triggerCount}-${Date.now()}`;
-//
-//     triggers.set(myId, setTrigger);
-//
-//     return (): void => {
-//       triggers.delete(myId);
-//     };
-//   }, []);
-//
-//   useEffect((): void => {
-//     extensions && getKnown(api, extensions, trigger).then(setAll);
-//   }, [api, extensions, trigger]);
-//
-//   return useMemo(
-//     () =>
-//       isDevelopment || !isApiReady || !all ? EMPTY_STATE : filterAll(api, all),
-//     [all, api, isApiReady, isDevelopment]
-//   );
-// }
-
 export const initPolkadotExtension: (
   successCb: (injectedExt: InjectedExtension[]) => void,
   errorCb: () => void
-) => Promise<Extensions | null> = async (successCb, errorCb) => {
+) => Promise<ExtensionKnown | null> = async (successCb, errorCb) => {
   let injectedExt: InjectedExtension[] = [];
   const api = getPolkadotApiInstance();
 
   try {
     injectedExt = await web3Enable('CLAIM.HYDRA.DX');
-    const chainInfo = await api.registry.getChainProperties()
 
-    const extensions = await getKnown(api, injectedExt);
+    extStore.extensions = await getKnown(api, injectedExt);
+    extStore.genesisHash = api.genesisHash.toHex();
     const filteredExts = await filterAll(api, extStore.extensions);
-    console.log('chainInfo - ', chainInfo)
+    const systemChain = await api.rpc.system.chain();
 
-    extensions[0]
-      //@ts-ignore
-      .update(chainInfo)
-      .catch(() => false)
-      .catch(console.error);
+    const chainInfo = {
+      chain: systemChain.toString(),
+      color: '#0044ff',
+      genesisHash: extStore.genesisHash,
+      icon: 'substrate',
+      metaCalls: Buffer.from(api.runtimeMetadata.asCallsOnly.toU8a()).toString(
+        'base64'
+      ),
+      specVersion: api.runtimeVersion.specVersion.toNumber(),
+      ss58Format: api.registry.chainSS58,
+      tokenDecimals: api.registry.chainDecimals[0],
+      tokenSymbol: api.registry.chainTokens[0],
+      types: getSpecTypes(
+        api.registry,
+        systemChain.toString(),
+        api.runtimeVersion.specName,
+        api.runtimeVersion.specVersion
+      ),
+    };
+
+    console.log('testInfo ---- ', chainInfo);
+    console.log('extStore.extensions ---- ', extStore.extensions);
+    console.log('filteredExts ---- ', filteredExts);
+
+    // Check if user should update metadata : if current metadata of extension is empty
+    // or check spec version in extension and api by genesisHash (api.genesisHash.toHex(),)
 
     //@ts-ignore
-    console.log('filterAll - ', await filterAll(api, extensions));
+    if (filteredExts[0]) {
+      try {
+        //@ts-ignore
+        await filteredExts[0].update(chainInfo);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
     //@ts-ignore
-    successCb(await filterAll(api, extStore.extensions));
+    successCb(extStore.extensions[0]);
     //@ts-ignore
-    return await filterAll(api, extStore.extensions);
+    return extStore.extensions[0];
   } catch (e) {
     errorCb();
     return null;
   }
+};
+
+export const getHydraDxAccountsFromExtension: () => Promise<
+  InjectedAccountWithMeta[]
+> = async () => {
+  if (!extStore.extensions[0]) return [];
+
+  const allAccounts: InjectedAccountWithMeta[] = await web3Accounts();
+  const knownExtensionProps = extStore.extensions[0].known;
+
+  return allAccounts.filter(account => {
+    return (
+      account.meta.genesisHash &&
+      extStore.genesisHash === account.meta.genesisHash
+    );
+  });
 };

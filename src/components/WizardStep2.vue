@@ -2,8 +2,7 @@
   <div
     class="wizard-step-container step-2"
     v-show="
-      (step2State.allAvailableAccounts.length === 0 &&
-        !hdxAccountData.connectedAccount) ||
+      (!step2State.openAccountsList && !hdxAccountData.connectedAccount) ||
       (step2State.allAvailableAccounts.length > 0 &&
         hdxAccountData.connectedAccount)
     "
@@ -49,10 +48,7 @@
     </a>
   </div>
   <div
-    v-show="
-      step2State.allAvailableAccounts.length > 0 &&
-      !hdxAccountData.connectedAccount
-    "
+    v-show="step2State.openAccountsList && !hdxAccountData.connectedAccount"
     class="wizard-step-container polkadot-accounts-select"
   >
     <div class="list-title">Accounts:</div>
@@ -75,6 +71,13 @@
           {{ getPolkadotFormattedAddress(account.address, 'hydradx') }}
         </div>
       </div>
+      <div
+        v-if="step2State.allAvailableAccounts.length === 0"
+        class="empty-accounts-list-notice"
+      >
+        You don't have existing accounts for HydraDX network in your Polkadot.js
+        extension. Please, create new one or attach existing to extension.
+      </div>
     </div>
     <a
       class="hdx-btn select-pd-account"
@@ -96,7 +99,10 @@ import {
   getPolkadotIdentityBalanceByAddress,
   getClaimableHdxAmountByAddress,
 } from '@/services/polkadotUtils';
-import { initPolkadotExtension } from '@/services/polkadotExtension';
+import {
+  initPolkadotExtension,
+  getHydraDxAccountsFromExtension,
+} from '@/services/polkadotExtension';
 import { web3Accounts } from '@polkadot/extension-dapp';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
@@ -106,6 +112,7 @@ interface Step2State {
   selectedAccount: InjectedAccountWithMeta | null;
   allAvailableAccounts: InjectedAccountWithMeta[];
   claimableHdxAmount: string | null;
+  openAccountsList: boolean;
 }
 
 export default defineComponent({
@@ -153,6 +160,7 @@ export default defineComponent({
       selectedAccount: null,
       allAvailableAccounts: [],
       claimableHdxAmount: null,
+      openAccountsList: false,
     } as Step2State);
 
     // watch(
@@ -221,13 +229,13 @@ export default defineComponent({
 
       if (!allInjected) return;
 
-      const allAccounts = await web3Accounts();
+      const allAccounts = await getHydraDxAccountsFromExtension();
 
       console.log('allInjected - ', allInjected);
       console.log('allAccounts - ', allAccounts);
-      // await allInjected.extensions[0].update();
 
       step2State.allAvailableAccounts = allAccounts;
+      step2State.openAccountsList = true;
     };
 
     const selectPdAccount = (account: InjectedAccountWithMeta) => {
@@ -244,9 +252,9 @@ export default defineComponent({
       const balance = await getPolkadotIdentityBalanceByAddress(
         step2State.selectedAccount.address
       );
-      console.log(balance);
 
       props.onConnectHdxAccount(step2State.selectedAccount, 0);
+      step2State.openAccountsList = false;
     };
 
     return {

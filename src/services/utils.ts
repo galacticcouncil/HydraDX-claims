@@ -25,12 +25,6 @@ export const getFormattedBalance: (
   toDecimal?: boolean
 ) => string = (rawBalance, toDecimal = false) => {
   const bnBalance = new BigNumber(rawBalance);
-
-  console.log('rawBalance - ', rawBalance, toDecimal);
-  console.log(
-    'rawBalance.toString - ',
-    bnBalance.div(1000000000000).decimalPlaces(4).toString()
-  );
   if (toDecimal)
     return bnBalance.div(1000000000000).decimalPlaces(4).toString();
 

@@ -132,6 +132,16 @@
         font-weight: 600;
       }
 
+      .empty-accounts-list-notice {
+        min-height: 200px;
+        padding: 10px;
+        font-size: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
       .account-item {
         margin-bottom: 20px;
         padding: 5px 10px;

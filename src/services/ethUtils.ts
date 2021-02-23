@@ -46,8 +46,6 @@ export const getXhdxBalanceByAddress: (
   address: string
 ) => Promise<number> = async address => {
   try {
-    console.log(address);
-    console.log('ethAddressesScope - ', ethAddressesScope);
     return +ethAddressesScope[address.trim().toLowerCase()].bought;
   } catch (e) {
     console.log(e);
@@ -88,7 +86,6 @@ export const signMessageWithMetaMask: (
     console.log(e);
     response = {};
   }
-  console.log('response - ', response);
 
   return response.result !== undefined ? response.result : '';
 

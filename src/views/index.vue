@@ -155,8 +155,6 @@ export default defineComponent({
       account: InjectedAccountWithMeta,
       hdxBalance: number
     ) => {
-      console.log('account - ', account);
-      console.log('hdxBalance - ', hdxBalance);
       hdxAccountData.hdxBalance = hdxBalance;
       hdxAccountData.connectedAccount = account;
     };

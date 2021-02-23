@@ -86,13 +86,6 @@ export const getClaimableHdxAmountByAddress: (
       '5DycF2czjMWhuDotXYzMJbWqP516hiLPu61UpztNR1ymGqYK'
     );
 
-    console.log(
-      'getClaimableHdxAmountByAddress balance - ',
-      balance.toString()
-    );
-    console.log('balance2 - ', balance2);
-    console.log('balance22 - ', balance2.toHuman());
-
     return balance.toString();
     // return '0';
   } catch (e) {
