@@ -11,28 +11,41 @@ const contractAddress = '0x6FCb6408499a7c0f242E32D77EB51fFa1dD28a7E';
 let web3Inst: Web3;
 let tokenContract: Contract;
 
-let ethAddressesScope: {
+interface EthAddressesScope {
   [key: string]: {
     totalClaim: string;
     bought: string;
     gasRefund: string;
     refundedTxs: string[];
   };
-} = {};
+}
 
-const fetchEthAddressesScope = async () => {
+/**
+ * "ethAddressesScope" will contain addresses scope after latest validation process,
+ * what means that this scope must contain selected ETH address and can be
+ * used for future manipulations.
+ */
+let ethAddressesScope: EthAddressesScope = {};
+
+const fetchEthAddressesScope: (
+  scopeBlockIdentifier: string | number
+) => Promise<EthAddressesScope | null> = async scopeBlockIdentifier => {
   try {
-    const scope = await import('@/services/ethAddressesScope.json');
-    ethAddressesScope = scope.default[0];
+    const scope = await import(
+      `@/assets/ethAddresses/claims-${scopeBlockIdentifier}.json`
+    );
+    ethAddressesScope = scope;
+    return scope.default;
   } catch (e) {
     console.log(e);
+    return null;
   }
 };
 
 export const initWeb3Instance = async () => {
   web3Inst = new Web3(Web3.givenProvider);
   // tokenContract = new web3Inst.eth.Contract(ethAbi as AbiItem[]).at(contractAddress);
-  await fetchEthAddressesScope();
+  // await fetchEthAddressesScope();
   tokenContract = new web3Inst.eth.Contract(
     ethAbi as AbiItem[],
     contractAddress
@@ -46,7 +59,9 @@ export const getXhdxBalanceByAddress: (
   address: string
 ) => Promise<number> = async address => {
   try {
-    return +ethAddressesScope[address.trim().toLowerCase()].bought;
+    return ethAddressesScope
+      ? +ethAddressesScope[address.trim().toLowerCase()].bought
+      : -1;
   } catch (e) {
     console.log(e);
     return -1;
@@ -56,11 +71,28 @@ export const getOwnedHdxBalanceByAddress: (
   address: string
 ) => Promise<string> = async address => {
   try {
-    return ethAddressesScope[address.trim().toLowerCase()].totalClaim;
+    return ethAddressesScope
+      ? ethAddressesScope[address.trim().toLowerCase()].totalClaim
+      : '0';
   } catch (e) {
     console.log(e);
     return '0';
   }
+};
+
+export const isEhtAddressClaimable: (
+  address: string
+) => Promise<boolean> = async address => {
+  if (address.indexOf('0x') !== 0) return false;
+  const addressTrimmed = address.replace('0x', '');
+
+  if (!addressTrimmed || addressTrimmed.length === 0) return false;
+
+  const addressesScope = await fetchEthAddressesScope(addressTrimmed[0]);
+
+  if (!addressesScope) return false;
+
+  return !!addressesScope[address.trim().toLowerCase()];
 };
 
 export const signMessageWithMetaMask: (
@@ -100,20 +132,6 @@ export const signMessageWithMetaMask: (
   // id: undefined
   // jsonrpc: "2"
   // result: "0xb2bc7ba434aca4a5130e880
-};
-
-export const validateSignature: (
-  rawSignature: string
-) => boolean = rawSignature => {
-  const splitedSignature = fromRpcSig(rawSignature);
-  console.log('splitedSignature- ', splitedSignature);
-  // splitedSignature.homesteadOrLater = true;
-  return isValidSignature(
-    splitedSignature.v,
-    splitedSignature.r,
-    splitedSignature.s
-  );
-  // return true;
 };
 
 // const addressBalance = await tokenContract.methods

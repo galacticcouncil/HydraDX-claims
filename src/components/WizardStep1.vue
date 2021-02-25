@@ -4,6 +4,12 @@
       Owned Balance: {{ xhdxBalanceFormatted }} xHDX
     </div>
 
+    <div v-show="step1State.notClaimableAddress" class="text-label">
+      There is not a claim associated with this address ({{
+        step1State.notClaimableAddress
+      }}). Did you use the right one?
+    </div>
+
     <a
       v-if="ethAccountData.connectedAccount.length === 0"
       class="hdx-btn connect-metamask"
@@ -63,7 +69,14 @@
 <script lang="ts">
 import { defineComponent, computed, watch, reactive } from 'vue';
 import { getFormattedBalance } from '@/services/utils';
-import { getXhdxBalanceByAddress } from '@/services/ethUtils';
+import { isEhtAddressClaimable } from '@/services/ethUtils';
+import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
+
+interface Step1State {
+  manuallyEnteredAccount: string;
+  manuallyEnteredAccountValid: boolean;
+  notClaimableAddress: boolean | string;
+}
 
 export default defineComponent({
   name: 'WizardStep1',
@@ -97,14 +110,15 @@ export default defineComponent({
     const step1State = reactive({
       manuallyEnteredAccount: '',
       manuallyEnteredAccountValid: false,
-    });
+      notClaimableAddress: false,
+    } as Step1State);
 
     watch(
       () => step1State.manuallyEnteredAccount,
       newVal => {
-        step1State.manuallyEnteredAccountValid = props.wizardState.web3Inst.utils.isAddress(
-          newVal
-        );
+        const isValid = props.wizardState.web3Inst.utils.isAddress(newVal);
+        step1State.manuallyEnteredAccountValid = isValid;
+        if (!isValid) step1State.notClaimableAddress = false;
       }
     );
 
@@ -121,18 +135,30 @@ export default defineComponent({
         const account = await window.ethereum.request({
           method: 'eth_requestAccounts',
         });
+        if (!(await isEhtAddressClaimable(account[0]))) {
+          step1State.notClaimableAddress = account[0];
+          return;
+        }
+        step1State.notClaimableAddress = false;
         props.onConnectEthAccount(account[0]);
       } catch (e) {
         console.log(e);
+        step1State.notClaimableAddress = false;
         //TODO add error handler
       }
     };
 
     const onConnectEthAccountClick = async () => {
       if (step1State.manuallyEnteredAccountValid) {
+        if (!(await isEhtAddressClaimable(step1State.manuallyEnteredAccount))) {
+          step1State.notClaimableAddress = step1State.manuallyEnteredAccount;
+          return;
+        }
+        step1State.notClaimableAddress = false;
         props.onConnectEthAccount(step1State.manuallyEnteredAccount);
       } else {
         //TODO add error handler
+        step1State.notClaimableAddress = false;
       }
     };
 
