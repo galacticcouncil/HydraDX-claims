@@ -13,7 +13,14 @@
             <ProgressLine :step="wizardState.wizardStep" />
           </div>
           <div v-show="wizardState.loading" class="loading-cover-message">
-            Loading ...
+            <span v-show="!wizardState.isReconnectBtn">Loading ...</span>
+            <a
+              v-show="wizardState.isReconnectBtn"
+              href="#"
+              @click.prevent="onReconnectClick"
+              class="hdx-btn loading-cover-btn reconnect-btn"
+              >Reconnect</a
+            >
           </div>
           <WizardStep1
             v-if="wizardState.wizardStep === 1"
@@ -73,6 +80,7 @@ interface WizardState {
   stepValidationStatus: boolean[];
   web3Inst: Web3;
   loading: boolean;
+  isReconnectBtn: boolean;
 }
 interface EthAccountData {
   isMetamaskAvailable: boolean;
@@ -104,6 +112,7 @@ export default defineComponent({
       stepValidationStatus: [false, false, true, false],
       web3Inst: getWeb3Instance(),
       loading: true,
+      isReconnectBtn: false,
     } as WizardState);
 
     const ethAccountData = reactive({
@@ -164,8 +173,37 @@ export default defineComponent({
       ethAccountData.isClaimableHdxAmountZero = isValueZero(amount);
     };
 
+    const onReconnectClick = () => {
+      wizardState.isReconnectBtn = false;
+      initPolkadotApiInstanceWrapper();
+    };
+
     const nextStepClick = () => {
       wizardState.wizardStep++;
+    };
+
+    const initPolkadotApiInstanceWrapper = async () => {
+      await initPolkadotApiInstance({
+        connected: () => {
+          console.log('pd api connected');
+          wizardState.loading = false;
+          wizardState.isReconnectBtn = false;
+        },
+        error: () => {
+          console.log('pd api error');
+          wizardState.loading = true;
+          wizardState.isReconnectBtn = true;
+        },
+        ready: () => {
+          console.log('pd api error');
+          wizardState.loading = false;
+          wizardState.isReconnectBtn = false;
+        },
+        disconnected: () => {
+          console.log('pd api error');
+          wizardState.loading = true;
+        },
+      });
     };
 
     onMounted(async () => {
@@ -178,25 +216,7 @@ export default defineComponent({
         // console.log('MetaMask is installed!', window.ethereum.isMetaMask);
         ethAccountData.isMetamaskAvailable = true;
       }
-
-      await initPolkadotApiInstance({
-        connected: () => {
-          console.log('pd api connected');
-          wizardState.loading = false;
-        },
-        error: () => {
-          console.log('pd api error');
-          wizardState.loading = true;
-        },
-        ready: () => {
-          console.log('pd api error');
-          wizardState.loading = false;
-        },
-        disconnected: () => {
-          console.log('pd api error');
-          wizardState.loading = true;
-        },
-      });
+      await initPolkadotApiInstanceWrapper();
     });
 
     return {
@@ -208,6 +228,7 @@ export default defineComponent({
       onConnectHdxAccount,
       onFetchClaimableHdxAmount,
       nextStepClick,
+      onReconnectClick,
     };
   },
 });

@@ -1,4 +1,4 @@
-import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import BigNumber from 'bignumber.js';
 import {
   web3Enable,
@@ -6,14 +6,14 @@ import {
   web3FromAddress,
   isWeb3Injected,
 } from '@polkadot/extension-dapp';
-import type {
-  InjectedAccountWithMeta,
-  InjectedExtension,
-} from '@polkadot/extension-inject/types';
+
+import { u8aToHex } from '@polkadot/util';
 
 import { setApiConnection } from '@/services/polkadotApi';
 
 import { Signer } from '@polkadot/api/types';
+
+const keyring = new Keyring();
 
 // const nodeAddress = 'wss://rpc-01.snakenet.hydradx.io';
 const nodeAddress = 'ws://127.0.0.1:9944';
@@ -38,7 +38,6 @@ export const initPolkadotApiInstance = async (apiListeners: ApiListeners) => {
 
   polkadotApiInstance = await createApi;
 };
-
 
 export const getPolkadotApiInstance = () => polkadotApiInstance;
 
@@ -138,4 +137,8 @@ export const claimBalance: (
   } catch (e) {
     console.log(e);
   }
+};
+
+export const accountToHex: (address: string) => string = address => {
+  return u8aToHex(keyring.decodeAddress(address));
 };

@@ -88,11 +88,16 @@
       height: 100%;
       background-color: rgba($hdx-blue, 0.9);
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       color: $hdx-light-blue;
       font-size: 14px;
       z-index: 5;
+
+      .loading-cover-btn {
+
+      }
     }
 
     .next-step {
@@ -108,6 +113,10 @@
     }
 
     .connect-metamask {
+      width: 100%;
+    }
+
+    .install-polkadot-ext {
       width: 100%;
     }
 

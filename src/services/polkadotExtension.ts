@@ -174,63 +174,66 @@ async function getKnown(
 }
 
 export const initPolkadotExtension: (
-  successCb: (injectedExt: InjectedExtension[]) => void,
-  errorCb: () => void
+  successCb: (injectedExt: ExtensionKnown | null) => void,
+  errorCb: (e: Error) => void
 ) => Promise<ExtensionKnown | null> = async (successCb, errorCb) => {
   let injectedExt: InjectedExtension[] = [];
   const api = getPolkadotApiInstance();
 
   try {
     injectedExt = await web3Enable('CLAIM.HYDRA.DX');
+    console.log('injectedExt - ', injectedExt);
+
+    if (!injectedExt || injectedExt.length === 0) {
+      throw Error('no_extension');
+    }
 
     extStore.extensions = await getKnown(api, injectedExt);
     extStore.genesisHash = api.genesisHash.toHex();
-    const filteredExts = await filterAll(api, extStore.extensions);
+    const filteredExts: Extensions = await filterAll(api, extStore.extensions);
     const systemChain = await api.rpc.system.chain();
 
-    const chainInfo = {
-      chain: systemChain.toString(),
-      color: '#0044ff',
-      genesisHash: extStore.genesisHash,
-      icon: 'substrate',
-      metaCalls: Buffer.from(api.runtimeMetadata.asCallsOnly.toU8a()).toString(
-        'base64'
-      ),
-      specVersion: api.runtimeVersion.specVersion.toNumber(),
-      ss58Format: api.registry.chainSS58,
-      tokenDecimals: api.registry.chainDecimals[0],
-      tokenSymbol: api.registry.chainTokens[0],
-      types: getSpecTypes(
-        api.registry,
-        systemChain.toString(),
-        api.runtimeVersion.specName,
-        api.runtimeVersion.specVersion
-      ),
-    };
-
-    console.log('testInfo ---- ', chainInfo);
     console.log('extStore.extensions ---- ', extStore.extensions);
     console.log('filteredExts ---- ', filteredExts);
 
     // Check if user should update metadata : if current metadata of extension is empty
     // or check spec version in extension and api by genesisHash (api.genesisHash.toHex(),)
 
-    //@ts-ignore
-    if (filteredExts[0]) {
+    if (filteredExts.count > 0) {
+      const chainInfo = {
+        chain: systemChain.toString(),
+        color: '#0044ff',
+        genesisHash: extStore.genesisHash,
+        icon: 'substrate',
+        metaCalls: Buffer.from(
+          api.runtimeMetadata.asCallsOnly.toU8a()
+        ).toString('base64'),
+        specVersion: api.runtimeVersion.specVersion.toNumber(),
+        ss58Format: api.registry.chainSS58,
+        tokenDecimals: api.registry.chainDecimals[0],
+        tokenSymbol: api.registry.chainTokens[0],
+        types: getSpecTypes(
+          api.registry,
+          systemChain.toString(),
+          api.runtimeVersion.specName,
+          api.runtimeVersion.specVersion
+        ),
+      };
+
+      console.log('testInfo ---- ', chainInfo);
+
       try {
         //@ts-ignore
-        await filteredExts[0].update(chainInfo);
+        await filteredExts.extensions[0].update(chainInfo);
       } catch (e) {
         console.log(e);
       }
     }
 
-    //@ts-ignore
     successCb(extStore.extensions[0]);
-    //@ts-ignore
     return extStore.extensions[0];
   } catch (e) {
-    errorCb();
+    errorCb(e);
     return null;
   }
 };
@@ -241,7 +244,6 @@ export const getHydraDxAccountsFromExtension: () => Promise<
   if (!extStore.extensions[0]) return [];
 
   const allAccounts: InjectedAccountWithMeta[] = await web3Accounts();
-  const knownExtensionProps = extStore.extensions[0].known;
 
   return allAccounts.filter(account => {
     return (

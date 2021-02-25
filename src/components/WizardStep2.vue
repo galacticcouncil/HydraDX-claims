@@ -11,14 +11,25 @@
     <div class="selected-account-view eth-account">
       {{ ethAccountData.connectedAccount }}
     </div>
-
+    <!--    https://polkadot.js.org/extension/-->
     <a
-      v-if="!hdxAccountData.connectedAccount"
+      v-if="
+        !hdxAccountData.connectedAccount && !step2State.showInstallPolkadotExt
+      "
       class="hdx-btn connect-metamask"
       :class="{ disabled: ethAccountData.isClaimableHdxAmountZero }"
       href="#"
       @click.prevent="onConnectPolkadotExtClick"
       >Connect Polkadot.js</a
+    >
+    <a
+      v-if="
+        !hdxAccountData.connectedAccount && step2State.showInstallPolkadotExt
+      "
+      class="hdx-btn install-polkadot-ext"
+      target="_blank"
+      href="https://polkadot.js.org/extension/"
+      >Install Polkadot.js</a
     >
     <div v-if="hdxAccountData.connectedAccount" class="text-label">
       Owned Balance: {{ hdxOwnedBalanceFormatted }} HDX
@@ -103,7 +114,7 @@ import {
   initPolkadotExtension,
   getHydraDxAccountsFromExtension,
 } from '@/services/polkadotExtension';
-import { web3Accounts } from '@polkadot/extension-dapp';
+import { isWeb3Injected } from '@polkadot/extension-dapp';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
 interface Step2State {
@@ -113,6 +124,7 @@ interface Step2State {
   allAvailableAccounts: InjectedAccountWithMeta[];
   claimableHdxAmount: string | null;
   openAccountsList: boolean;
+  showInstallPolkadotExt: boolean;
 }
 
 export default defineComponent({
@@ -161,6 +173,7 @@ export default defineComponent({
       allAvailableAccounts: [],
       claimableHdxAmount: null,
       openAccountsList: false,
+      showInstallPolkadotExt: false,
     } as Step2State);
 
     // watch(
@@ -176,6 +189,7 @@ export default defineComponent({
       // step2State.claimableHdxAmount = await getClaimableHdxAmountByAddress(
       //   props.ethAccountData.connectedAccount
       // );
+      step2State.showInstallPolkadotExt = !isWeb3Injected;
       props.onFetchClaimableHdxAmount(
         await getClaimableHdxAmountByAddress(
           props.ethAccountData.connectedAccount
@@ -209,7 +223,8 @@ export default defineComponent({
     const onConnectPolkadotExtClick = async () => {
       let allInjected = await initPolkadotExtension(
         extInstance => {
-          if (extInstance && extInstance.length > 0) {
+          console.log('initPolkadotExtension - +++');
+          if (extInstance) {
             step2State.isPDExtensionApproveWaiting = false;
             step2State.isPDExtensionApproved = true;
           } else {
@@ -219,7 +234,11 @@ export default defineComponent({
             //TODO add reject notice
           }
         },
-        () => {
+        e => {
+          if (e && e.message === 'no_extension') {
+            step2State.showInstallPolkadotExt = true;
+          }
+
           step2State.isPDExtensionApproveWaiting = false;
           step2State.isPDExtensionApproved = false;
           //TODO add reject notice

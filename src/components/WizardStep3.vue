@@ -36,7 +36,7 @@
 import { defineComponent, reactive, onMounted, watch } from 'vue';
 import ClipboardJS from 'clipboard';
 import { signMessageWithMetaMask } from '@/services/ethUtils';
-import { claimBalance } from '@/services/polkadotUtils';
+import { claimBalance, accountToHex } from '@/services/polkadotUtils';
 import { getPolkadotFormattedAddress } from '@/services/utils';
 
 interface Step3State {
@@ -79,10 +79,9 @@ export default defineComponent({
   },
   setup(props) {
     const step3State = reactive({
-      messageValue: `I hereby claim all my xHDX tokens to wallet:${getPolkadotFormattedAddress(
-        props.hdxAccountData.connectedAccount.address,
-        'hydradx'
-      )}`,
+      messageValue: `I hereby claim all my HDX tokens to wallet:${accountToHex(
+        props.hdxAccountData.connectedAccount.address
+      ).replace('0x', '')}`,
       responseValue: '',
       responseValueForSend: '',
       clipboardInst: null,
@@ -134,7 +133,9 @@ export default defineComponent({
       console.log('claim');
       await claimBalance(
         step3State.responseValueForSend,
-        getPolkadotFormattedAddress(props.hdxAccountData.connectedAccount.address)
+        getPolkadotFormattedAddress(
+          props.hdxAccountData.connectedAccount.address
+        )
       );
     };
 
