@@ -13,8 +13,8 @@
       class="hdx-input response-input"
       placeholder="Response"
       v-model="step3State.responseValue"
+      :disabled="step3State.isResponseInputDisabled"
     />
-    <!--    :class="{ disabled: !isNextStepValid }"-->
     <a
       v-show="step3State.responseValueForSend.length === 0"
       class="hdx-btn next-step"
@@ -46,6 +46,7 @@ interface Step3State {
   responseValueForSend: string;
   clipboardInst: any;
   copied: boolean;
+  isResponseInputDisabled: boolean;
 }
 
 export default defineComponent({
@@ -91,6 +92,7 @@ export default defineComponent({
       responseValueForSend: '',
       clipboardInst: null,
       copied: false,
+      isResponseInputDisabled: false,
     } as Step3State);
 
     onMounted(async () => {
@@ -121,10 +123,6 @@ export default defineComponent({
         } catch (e) {
           step3State.responseValueForSend = newVal;
         }
-        console.log(
-          'step3State.responseValueForSend - ',
-          step3State.responseValueForSend
-        );
       }
     );
 
@@ -133,9 +131,11 @@ export default defineComponent({
         props.ethAccountData.connectedAccount,
         step3State.messageValue
       );
+      step3State.isResponseInputDisabled = !!(
+        step3State.responseValue && step3State.responseValue.length > 0
+      );
     };
     const onClaimClick = async () => {
-      console.log('claim');
       await claimBalance(
         step3State.responseValueForSend,
         getPolkadotFormattedAddress(

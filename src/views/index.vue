@@ -16,18 +16,29 @@
             v-show="wizardState.loading || wizardState.claiming.inProgress"
             class="loading-cover-message"
           >
-            <span
+            <div
               v-show="
                 !wizardState.isReconnectBtn && !wizardState.claiming.inProgress
               "
-              >Loading ...</span
             >
-            <span
+              Loading ...
+            </div>
+            <div
               v-show="
                 !wizardState.isReconnectBtn && wizardState.claiming.inProgress
               "
-              >Claiming ...</span
             >
+              Claiming ...
+            </div>
+            <div
+              v-show="
+                !wizardState.isReconnectBtn &&
+                wizardState.claiming.inProgress &&
+                wizardState.claiming.resultMessage.length > 0
+              "
+            >
+              {{ wizardState.claiming.resultMessage }}
+            </div>
             <a
               v-show="wizardState.isReconnectBtn"
               href="#"
@@ -220,7 +231,10 @@ export default defineComponent({
       initPolkadotApiInstanceWrapper();
     };
     const setClaimProcessStatus = (status: ClaimProcessStatus): void => {
-      wizardState.claiming = status;
+      wizardState.claiming = {
+        ...status,
+        resultMessage: status.resultMessage || '',
+      };
     };
 
     const nextStepClick = () => {

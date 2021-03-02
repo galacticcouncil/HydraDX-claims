@@ -7,6 +7,8 @@ import { u8aToHex } from '@polkadot/util';
 import { setApiConnection } from '@/services/polkadotApi';
 
 import { Signer } from '@polkadot/api/types';
+import type { EventRecord } from '@polkadot/types/interfaces';
+import type { ISubmittableResult } from '@polkadot/types/types';
 
 import type { ClaimProcessStatus, ApiListeners } from '@/types';
 
@@ -87,6 +89,7 @@ export const claimBalance: (
   statusCl: (status: ClaimProcessStatus) => void
 ) => Promise<void> = async (sign, account, statusCl) => {
   const signer = await getSinger(account);
+  let isCompletted = false;
 
   try {
     statusCl({
@@ -99,7 +102,7 @@ export const claimBalance: (
       .signAndSend(
         account,
         { signer: signer },
-        ({ events, status }: { events: any; status: any }) => {
+        ({ events, status }: ISubmittableResult) => {
           console.log('-----------------------');
           console.log('events - ', events);
           console.log('statu - ', status);
@@ -108,34 +111,46 @@ export const claimBalance: (
             `--- status.isInBlock - ${status.isInBlock} || status.isFinalized - ${status.isFinalized}--- `
           );
 
-          if (status.isFinalized) {
-            //@ts-ignore
-            events.forEach(({ phase, event: { data, method, section } }) => {
+          events.forEach(
+            ({ phase, event: { data, method, section } }: EventRecord) => {
               const [error, info] = data;
               console.log('error - ', error);
               console.log('info - ', info);
               console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
 
-              if (method === 'ExtrinsicFailed') {
+              if (!isCompletted && method === 'ExtrinsicFailed') {
+                isCompletted = true;
                 statusCl({
                   inProgress: false,
                   completed: true,
                   resultStatus: 1,
                 });
               }
-              if (method === 'Claimed') {
+              if (!isCompletted && status.isInBlock && method === 'Claimed') {
+                statusCl({
+                  inProgress: true,
+                  completed: false,
+                  resultStatus: 0,
+                  resultMessage: 'Almost done! Request is already in block.',
+                });
+              }
+              if (!isCompletted && status.isFinalized && method === 'Claimed') {
+                isCompletted = true;
                 statusCl({
                   inProgress: false,
                   completed: true,
                   resultStatus: 0,
+                  resultMessage: '',
                 });
               }
-            });
-          }
+            }
+          );
         }
       )
       .catch(e => {
         console.log('error - ', e);
+        if (isCompletted) return;
+        isCompletted = true;
         statusCl({
           inProgress: false,
           completed: true,
@@ -148,6 +163,7 @@ export const claimBalance: (
     // return '0';
   } catch (e) {
     console.log(e);
+    if (isCompletted) return;
     statusCl({
       inProgress: false,
       completed: true,
