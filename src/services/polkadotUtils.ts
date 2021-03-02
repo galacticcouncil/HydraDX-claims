@@ -1,11 +1,6 @@
 import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import BigNumber from 'bignumber.js';
-import {
-  web3Enable,
-  web3Accounts,
-  web3FromAddress,
-  isWeb3Injected,
-} from '@polkadot/extension-dapp';
+import { web3FromAddress } from '@polkadot/extension-dapp';
 
 import { u8aToHex } from '@polkadot/util';
 
@@ -13,22 +8,15 @@ import { setApiConnection } from '@/services/polkadotApi';
 
 import { Signer } from '@polkadot/api/types';
 
+import type { ClaimProcessStatus, ApiListeners } from '@/types';
+
 const keyring = new Keyring();
 
-// const nodeAddress = 'wss://rpc-01.snakenet.hydradx.io';
-const nodeAddress = 'ws://127.0.0.1:9944';
 let polkadotApiInstance: ApiPromise;
 
 const getSinger = async (account: string): Promise<Signer> => {
   const injector = await web3FromAddress(account);
   return injector.signer;
-};
-
-type ApiListeners = {
-  error: (e: Error) => void;
-  connected: () => void;
-  disconnected: () => void;
-  ready: (api: ApiPromise) => void;
 };
 
 export const initPolkadotApiInstance = async (apiListeners: ApiListeners) => {
@@ -95,40 +83,64 @@ export const getClaimableHdxAmountByAddress: (
 
 export const claimBalance: (
   sign: string,
-  account: string
-) => Promise<void> = async (sign, account) => {
+  account: string,
+  statusCl: (status: ClaimProcessStatus) => void
+) => Promise<void> = async (sign, account, statusCl) => {
   const signer = await getSinger(account);
 
   try {
+    statusCl({
+      inProgress: true,
+      completed: false,
+      resultStatus: 0,
+    });
     const claimResponse = await polkadotApiInstance.tx.claims
       .claim(sign)
       .signAndSend(
         account,
         { signer: signer },
         ({ events, status }: { events: any; status: any }) => {
-          // console.log('events - ', events);
-          // console.log('statu - ', status);
-          // console.log('status.toHuman - ', status.toHuman());
+          console.log('-----------------------');
+          console.log('events - ', events);
+          console.log('statu - ', status);
+          console.log('status.toHuman - ', status.toHuman());
+          console.log(
+            `--- status.isInBlock - ${status.isInBlock} || status.isFinalized - ${status.isFinalized}--- `
+          );
 
           if (status.isFinalized) {
-            console.log(
-              `Transaction included at blockHash ${status.asFinalized}`
-            );
-
-            // Loop through Vec<EventRecord> to display all events
             //@ts-ignore
             events.forEach(({ phase, event: { data, method, section } }) => {
+              const [error, info] = data;
+              console.log('error - ', error);
+              console.log('info - ', info);
               console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
-              console.log('data - ', data);
-            });
 
-            // //@ts-ignore
-            // claimResponse();
+              if (method === 'ExtrinsicFailed') {
+                statusCl({
+                  inProgress: false,
+                  completed: true,
+                  resultStatus: 1,
+                });
+              }
+              if (method === 'Claimed') {
+                statusCl({
+                  inProgress: false,
+                  completed: true,
+                  resultStatus: 0,
+                });
+              }
+            });
           }
         }
       )
       .catch(e => {
         console.log('error - ', e);
+        statusCl({
+          inProgress: false,
+          completed: true,
+          resultStatus: 1,
+        });
       });
 
     console.log('claimResponse - ', claimResponse);
@@ -136,6 +148,11 @@ export const claimBalance: (
     // return '0';
   } catch (e) {
     console.log(e);
+    statusCl({
+      inProgress: false,
+      completed: true,
+      resultStatus: 1,
+    });
   }
 };
 

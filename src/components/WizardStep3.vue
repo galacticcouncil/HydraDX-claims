@@ -33,11 +33,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, onMounted, watch } from 'vue';
+import { defineComponent, reactive, onMounted, watch, PropType } from 'vue';
 import ClipboardJS from 'clipboard';
 import { signMessageWithMetaMask } from '@/services/ethUtils';
 import { claimBalance, accountToHex } from '@/services/polkadotUtils';
 import { getPolkadotFormattedAddress } from '@/services/utils';
+import type { ClaimProcessStatus } from '@/types';
 
 interface Step3State {
   messageValue: string;
@@ -70,6 +71,10 @@ export default defineComponent({
     },
     nextStepClick: {
       type: Function,
+      default: () => {},
+    },
+    setClaimProcessStatus: {
+      type: Function as PropType<(status: ClaimProcessStatus) => void>,
       default: () => {},
     },
     isNextStepValid: {
@@ -135,7 +140,8 @@ export default defineComponent({
         step3State.responseValueForSend,
         getPolkadotFormattedAddress(
           props.hdxAccountData.connectedAccount.address
-        )
+        ),
+        props.setClaimProcessStatus
       );
     };
 

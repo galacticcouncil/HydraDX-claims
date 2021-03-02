@@ -236,12 +236,12 @@
 
     }
 
-    .success-message-container {
+    .status-message-container {
       display: flex;
       flex-direction: column;
       align-items: center;
 
-      .success-icon {
+      .status-icon {
         background-color: $hdx-light-blue;
         width: 100px;
         height: 100px;

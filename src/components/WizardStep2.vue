@@ -11,13 +11,11 @@
     <div class="selected-account-view eth-account">
       {{ ethAccountData.connectedAccount }}
     </div>
-    <!--    https://polkadot.js.org/extension/-->
     <a
       v-if="
         !hdxAccountData.connectedAccount && !step2State.showInstallPolkadotExt
       "
       class="hdx-btn connect-metamask"
-      :class="{ disabled: ethAccountData.isClaimableHdxAmountZero }"
       href="#"
       @click.prevent="onConnectPolkadotExtClick"
       >Connect Polkadot.js</a
@@ -189,7 +187,12 @@ export default defineComponent({
       // step2State.claimableHdxAmount = await getClaimableHdxAmountByAddress(
       //   props.ethAccountData.connectedAccount
       // );
-      step2State.showInstallPolkadotExt = !isWeb3Injected;
+      step2State.showInstallPolkadotExt =
+        //@ts-ignore
+        !window.injectedWeb3 || !window.injectedWeb3['polkadot-js'];
+      console.log('isWeb3Injected - ', isWeb3Injected);
+      //@ts-ignore
+      console.log('window.injectedWeb3 - ', window.injectedWeb3);
       props.onFetchClaimableHdxAmount(
         await getClaimableHdxAmountByAddress(
           props.ethAccountData.connectedAccount
@@ -245,6 +248,8 @@ export default defineComponent({
           return;
         }
       );
+
+      console.log('isWeb3Injected - ', isWeb3Injected);
 
       if (!allInjected) return;
 

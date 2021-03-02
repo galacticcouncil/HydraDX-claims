@@ -1,15 +1,9 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import type { ApiListeners } from '@/types';
 
 // const nodeAddress = 'wss://rpc-01.snakenet.hydradx.io';
 const nodeAddress = 'ws://127.0.0.1:9944';
 let polkadotApiInstance: ApiPromise;
-
-type ApiListeners = {
-  error: (e: Error) => void;
-  connected: () => void;
-  disconnected: () => void;
-  ready: (api: ApiPromise) => void;
-};
 
 export const setApiConnection = (
   resolvePromise: (response: ApiPromise) => void,

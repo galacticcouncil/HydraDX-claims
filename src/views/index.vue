@@ -12,8 +12,22 @@
           <div class="wizard-progress-status">
             <ProgressLine :step="wizardState.wizardStep" />
           </div>
-          <div v-show="wizardState.loading" class="loading-cover-message">
-            <span v-show="!wizardState.isReconnectBtn">Loading ...</span>
+          <div
+            v-show="wizardState.loading || wizardState.claiming.inProgress"
+            class="loading-cover-message"
+          >
+            <span
+              v-show="
+                !wizardState.isReconnectBtn && !wizardState.claiming.inProgress
+              "
+              >Loading ...</span
+            >
+            <span
+              v-show="
+                !wizardState.isReconnectBtn && wizardState.claiming.inProgress
+              "
+              >Claiming ...</span
+            >
             <a
               v-show="wizardState.isReconnectBtn"
               href="#"
@@ -48,8 +62,12 @@
             :on-connect-hdx-account="onConnectHdxAccount"
             :is-next-step-valid="isNextStepValid"
             :next-step-click="nextStepClick"
+            :set-claim-process-status="setClaimProcessStatus"
           />
-          <WizardStep4 v-if="wizardState.wizardStep === 4" />
+          <WizardStep4
+            v-if="wizardState.wizardStep === 4"
+            :wizard-state="wizardState"
+          />
         </div>
       </div>
     </div>
@@ -74,12 +92,14 @@ import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import Web3 from 'web3';
 import { initPolkadotApiInstance } from '@/services/polkadotUtils';
 import { isValueZero } from '@/services/utils';
+import type { ClaimProcessStatus } from '@/types';
 
 interface WizardState {
   wizardStep: number;
   stepValidationStatus: boolean[];
   web3Inst: Web3;
   loading: boolean;
+  claiming: ClaimProcessStatus;
   isReconnectBtn: boolean;
 }
 interface EthAccountData {
@@ -112,6 +132,12 @@ export default defineComponent({
       stepValidationStatus: [false, false, true, false],
       web3Inst: getWeb3Instance(),
       loading: true,
+      claiming: {
+        inProgress: false,
+        completed: false,
+        resultStatus: 0,
+        resultMessage: '',
+      },
       isReconnectBtn: false,
     } as WizardState);
 
@@ -139,6 +165,8 @@ export default defineComponent({
     watch(
       () => hdxAccountData.connectedAccount,
       newVal => {
+        // wizardState.stepValidationStatus[1] =
+        //   !!newVal && !ethAccountData.isClaimableHdxAmountZero;
         wizardState.stepValidationStatus[1] = !!newVal;
       }
     );
@@ -146,6 +174,20 @@ export default defineComponent({
       () => ethAccountData.isClaimableHdxAmountZero,
       newVal => {
         if (!newVal) wizardState.stepValidationStatus[2] = false;
+      }
+    );
+
+    watch(
+      () => wizardState.claiming,
+      (newVal, oldVal) => {
+        console.log('new val - ', newVal);
+        if (
+          !newVal.inProgress &&
+          newVal.completed &&
+          newVal.completed !== oldVal.completed
+        ) {
+          wizardState.wizardStep++;
+        }
       }
     );
 
@@ -176,6 +218,9 @@ export default defineComponent({
     const onReconnectClick = () => {
       wizardState.isReconnectBtn = false;
       initPolkadotApiInstanceWrapper();
+    };
+    const setClaimProcessStatus = (status: ClaimProcessStatus): void => {
+      wizardState.claiming = status;
     };
 
     const nextStepClick = () => {
@@ -213,7 +258,6 @@ export default defineComponent({
         // @ts-ignore
         window.ethereum.isMetaMask
       ) {
-        // console.log('MetaMask is installed!', window.ethereum.isMetaMask);
         ethAccountData.isMetamaskAvailable = true;
       }
       await initPolkadotApiInstanceWrapper();
@@ -229,6 +273,7 @@ export default defineComponent({
       onFetchClaimableHdxAmount,
       nextStepClick,
       onReconnectClick,
+      setClaimProcessStatus,
     };
   },
 });
