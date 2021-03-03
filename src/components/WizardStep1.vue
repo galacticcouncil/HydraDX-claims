@@ -1,6 +1,6 @@
 <template>
   <div class="wizard-step-container step-1">
-    <div v-if="xhdxBalanceFormatted >= 0" class="text-label">
+    <div v-if="!ethAccountData.isXhdxBalanceZero" class="text-label">
       Owned Balance: {{ xhdxBalanceFormatted }} xHDX
     </div>
 
@@ -123,10 +123,10 @@ export default defineComponent({
     );
 
     const xhdxBalanceFormatted = computed(() => {
-      if (props.ethAccountData.xhdxBalance >= 0) {
+      if (!props.ethAccountData.isXhdxBalanceZero) {
         return getFormattedBalance(props.ethAccountData.xhdxBalance);
       }
-      return -1;
+      return '0';
     });
 
     const onConnectMetamaskClick = async () => {

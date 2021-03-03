@@ -116,7 +116,8 @@ interface WizardState {
 interface EthAccountData {
   isMetamaskAvailable: boolean;
   connectedAccount: string;
-  xhdxBalance: number;
+  xhdxBalance: string;
+  isXhdxBalanceZero: boolean;
   hdxOwnedBalance: string;
   claimableHdxAmount: string;
   isClaimableHdxAmountZero: boolean;
@@ -124,7 +125,7 @@ interface EthAccountData {
 interface HdxAccountData {
   isPolkadotExtAvailable: boolean;
   connectedAccount: InjectedAccountWithMeta | null;
-  hdxBalance: number;
+  hdxBalance: string;
 }
 
 export default defineComponent({
@@ -155,7 +156,8 @@ export default defineComponent({
     const ethAccountData = reactive({
       isMetamaskAvailable: false,
       connectedAccount: '',
-      xhdxBalance: -1,
+      xhdxBalance: '0',
+      isXhdxBalanceZero: true,
       hdxOwnedBalance: '0',
       claimableHdxAmount: '0',
       isClaimableHdxAmountZero: true,
@@ -164,13 +166,15 @@ export default defineComponent({
     const hdxAccountData = reactive({
       isPolkadotExtAvailable: false,
       connectedAccount: null,
-      hdxBalance: -1,
+      hdxBalance: '0',
     } as HdxAccountData);
 
     watch(
       () => ethAccountData.xhdxBalance,
       newVal => {
-        wizardState.stepValidationStatus[0] = newVal >= 0;
+        const isValZero = isValueZero(newVal);
+        ethAccountData.isXhdxBalanceZero = isValZero;
+        wizardState.stepValidationStatus[0] = !isValZero;
       }
     );
     watch(
@@ -215,7 +219,7 @@ export default defineComponent({
     };
     const onConnectHdxAccount = async (
       account: InjectedAccountWithMeta,
-      hdxBalance: number
+      hdxBalance: string
     ) => {
       hdxAccountData.hdxBalance = hdxBalance;
       hdxAccountData.connectedAccount = account;

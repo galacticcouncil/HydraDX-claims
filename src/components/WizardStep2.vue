@@ -206,10 +206,10 @@ export default defineComponent({
     });
 
     const xhdxBalanceFormatted = computed(() => {
-      if (props.ethAccountData.xhdxBalance >= 0) {
+      if (!props.ethAccountData.isXhdxBalanceZero) {
         return getFormattedBalance(props.ethAccountData.xhdxBalance);
       }
-      return -1;
+      return '0';
     });
     const hdxOwnedBalanceFormatted = computed(() => {
       if (props.ethAccountData.hdxOwnedBalance) {
@@ -274,7 +274,7 @@ export default defineComponent({
 
       console.log('------ balance - ', balance);
 
-      props.onConnectHdxAccount(step2State.selectedAccount, 0);
+      props.onConnectHdxAccount(step2State.selectedAccount, '0');
       step2State.openAccountsList = false;
     };
 

@@ -57,14 +57,14 @@ export const getTokenInstance = () => tokenContract;
 
 export const getXhdxBalanceByAddress: (
   address: string
-) => Promise<number> = async address => {
+) => Promise<string> = async address => {
   try {
     return ethAddressesScope
-      ? +ethAddressesScope[address.trim().toLowerCase()].bought
-      : -1;
+      ? ethAddressesScope[address.trim().toLowerCase()].bought
+      : '0';
   } catch (e) {
     console.log(e);
-    return -1;
+    return '0';
   }
 };
 export const getOwnedHdxBalanceByAddress: (
