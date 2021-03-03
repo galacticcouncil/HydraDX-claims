@@ -37,7 +37,7 @@ import { defineComponent, reactive, onMounted, watch, PropType } from 'vue';
 import ClipboardJS from 'clipboard';
 import { signMessageWithMetaMask } from '@/services/ethUtils';
 import { claimBalance, accountToHex } from '@/services/polkadotUtils';
-import { getPolkadotFormattedAddress } from '@/services/utils';
+import { getHydraDxFormattedAddress } from '@/services/utils';
 import type { ClaimProcessStatus } from '@/types';
 
 interface Step3State {
@@ -138,7 +138,7 @@ export default defineComponent({
     const onClaimClick = async () => {
       await claimBalance(
         step3State.responseValueForSend,
-        getPolkadotFormattedAddress(
+        getHydraDxFormattedAddress(
           props.hdxAccountData.connectedAccount.address
         ),
         props.setClaimProcessStatus

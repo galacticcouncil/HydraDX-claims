@@ -1,16 +1,13 @@
-import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
+import { ApiPromise, Keyring } from '@polkadot/api';
 import BigNumber from 'bignumber.js';
 import { web3FromAddress } from '@polkadot/extension-dapp';
-
 import { u8aToHex } from '@polkadot/util';
-
-import { setApiConnection } from '@/services/polkadotApi';
-
 import { Signer } from '@polkadot/api/types';
 import type { EventRecord } from '@polkadot/types/interfaces';
 import type { ISubmittableResult } from '@polkadot/types/types';
 
 import type { ClaimProcessStatus, ApiListeners } from '@/types';
+import { setApiConnection } from '@/services/polkadotApi';
 
 const keyring = new Keyring();
 
@@ -31,52 +28,12 @@ export const initPolkadotApiInstance = async (apiListeners: ApiListeners) => {
 
 export const getPolkadotApiInstance = () => polkadotApiInstance;
 
-export const getPolkadotIdentityBalanceByAddress: (
-  address: string
-) => Promise<number> = async address => {
-  try {
-    const multiTokenInfo = await polkadotApiInstance.query.tokens.accounts.entries(
-      address
-    );
-    const baseTokenInfo = await polkadotApiInstance.query.system.account(
-      address
-    );
-
-    const baseTokenBalance = new BigNumber(baseTokenInfo.data.free.toString());
-
-    const assetIds = await polkadotApiInstance.query.assetRegistry.assetIds.entries();
-
-    // console.log('assetIds - ', assetIds);
-    // console.log('multiTokenInfo - ', multiTokenInfo);
-    // console.log('baseTokenInfo - ', baseTokenInfo);
-    // console.log('baseTokenBalance.toString() - ', baseTokenBalance.toString());
-    //
-    // // const balance = await polkadotApiInstance.query.claims.hdxclaims(address);
-    // //
-    // console.log('multiTokenInfo - ', multiTokenInfo);
-    //
-    // console.log(polkadotApiInstance);
-
-    return 0;
-  } catch (e) {
-    console.log(e);
-    return -1;
-  }
-};
-
 export const getClaimableHdxAmountByAddress: (
   address: string
-) => Promise<string | null> = async (
-  address = '0x19aD3978B233a91a30f9dDda6C6F6c92bA97b8f2'
-) => {
+) => Promise<string | null> = async (address = '') => {
   try {
     const balance = await polkadotApiInstance.query.claims.claims(address);
-    const balance2 = await polkadotApiInstance.query.system.account(
-      '5DycF2czjMWhuDotXYzMJbWqP516hiLPu61UpztNR1ymGqYK'
-    );
-
     return balance.toString();
-    // return '0';
   } catch (e) {
     console.log(e);
     return null;
@@ -89,7 +46,7 @@ export const claimBalance: (
   statusCl: (status: ClaimProcessStatus) => void
 ) => Promise<void> = async (sign, account, statusCl) => {
   const signer = await getSinger(account);
-  let isCompletted = false;
+  let isCompleted = false;
 
   try {
     statusCl({
@@ -118,15 +75,15 @@ export const claimBalance: (
               console.log('info - ', info);
               console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
 
-              if (!isCompletted && method === 'ExtrinsicFailed') {
-                isCompletted = true;
+              if (!isCompleted && method === 'ExtrinsicFailed') {
+                isCompleted = true;
                 statusCl({
                   inProgress: false,
                   completed: true,
                   resultStatus: 1,
                 });
               }
-              if (!isCompletted && status.isInBlock && method === 'Claimed') {
+              if (!isCompleted && status.isInBlock && method === 'Claimed') {
                 statusCl({
                   inProgress: true,
                   completed: false,
@@ -134,8 +91,8 @@ export const claimBalance: (
                   resultMessage: 'Almost done! Request is already in block.',
                 });
               }
-              if (!isCompletted && status.isFinalized && method === 'Claimed') {
-                isCompletted = true;
+              if (!isCompleted && status.isFinalized && method === 'Claimed') {
+                isCompleted = true;
                 statusCl({
                   inProgress: false,
                   completed: true,
@@ -149,8 +106,8 @@ export const claimBalance: (
       )
       .catch(e => {
         console.log('error - ', e);
-        if (isCompletted) return;
-        isCompletted = true;
+        if (isCompleted) return;
+        isCompleted = true;
         statusCl({
           inProgress: false,
           completed: true,
@@ -163,7 +120,7 @@ export const claimBalance: (
     // return '0';
   } catch (e) {
     console.log(e);
-    if (isCompletted) return;
+    if (isCompleted) return;
     statusCl({
       inProgress: false,
       completed: true,
@@ -174,4 +131,33 @@ export const claimBalance: (
 
 export const accountToHex: (address: string) => string = address => {
   return u8aToHex(keyring.decodeAddress(address));
+};
+
+// TODO should be removed as legacy functions
+
+export const getPolkadotIdentityBalanceByAddress: (
+  address: string
+) => Promise<number> = async address => {
+  try {
+    const multiTokenInfo = await polkadotApiInstance.query.tokens.accounts.entries(
+      address
+    );
+    const baseTokenInfo = await polkadotApiInstance.query.system.account(
+      address
+    );
+
+    const baseTokenBalance = new BigNumber(baseTokenInfo.data.free.toString());
+
+    const assetIds = await polkadotApiInstance.query.assetRegistry.assetIds.entries();
+
+    console.log('assetIds - ', assetIds);
+    console.log('multiTokenInfo - ', multiTokenInfo);
+    // console.log('baseTokenInfo - ', baseTokenInfo);
+    console.log('baseTokenBalance.toString() - ', baseTokenBalance.toString());
+
+    return 0;
+  } catch (e) {
+    console.log(e);
+    return -1;
+  }
 };

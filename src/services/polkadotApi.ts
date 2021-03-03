@@ -1,8 +1,14 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import type { ApiListeners } from '@/types';
 
-// const nodeAddress = 'wss://rpc-01.snakenet.hydradx.io';
-const nodeAddress = 'ws://127.0.0.1:9944';
+const local =
+  window.location.hostname === '127.0.0.1' ||
+  window.location.hostname === 'localhost';
+
+const nodeAddress = local
+  ? 'ws://127.0.0.1:9944'
+  : 'wss://rpc-01.snakenet.hydradx.io';
+
 let polkadotApiInstance: ApiPromise;
 
 export const setApiConnection = (
@@ -139,6 +145,7 @@ export const setApiConnection = (
       })
       .on('connected', () => {
         apiListeners.connected();
+        console.log('ApiPromise - connected ');
         isDisconnection = false;
       })
       .on('disconnected', () => {
@@ -146,6 +153,7 @@ export const setApiConnection = (
          * This event happens when connection has been lost and each time, when
          * connection attempt has been done with error.
          */
+        console.log('ApiPromise - disconnected ');
         if (!isDisconnection) {
           apiListeners.disconnected();
           isDisconnection = true;
@@ -153,15 +161,18 @@ export const setApiConnection = (
         }
       })
       .on('ready', apiInstance => {
+        console.log('ApiPromise - ready ');
         polkadotApiInstance = apiInstance;
         apiListeners.ready(apiInstance);
       })
       .isReadyOrError.then(apiResponse => {
+        console.log('isReadyOrError - catch ');
         polkadotApiInstance = apiResponse;
         apiListeners.connected();
         resolvePromise(apiResponse);
       })
       .catch(e => {
+        console.log('isReadyOrError - error ');
         apiListeners.error(e);
       });
   });

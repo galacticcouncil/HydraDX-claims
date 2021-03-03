@@ -36,12 +36,7 @@
       v-if="hdxAccountData.connectedAccount"
       class="selected-account-view eth-account"
     >
-      {{
-        getPolkadotFormattedAddress(
-          hdxAccountData.connectedAccount.address,
-          'polkadot'
-        )
-      }}
+      {{ getHydraDxFormattedAddress(hdxAccountData.connectedAccount.address) }}
     </div>
 
     <div class="text-label">
@@ -77,7 +72,7 @@
           {{ account.meta.name }}
         </div>
         <div class="address">
-          {{ getPolkadotFormattedAddress(account.address, 'hydradx') }}
+          {{ getHydraDxFormattedAddress(account.address) }}
         </div>
       </div>
       <div
@@ -102,7 +97,7 @@
 import { defineComponent, computed, reactive, onMounted } from 'vue';
 import {
   getFormattedBalance,
-  getPolkadotFormattedAddress,
+  getHydraDxFormattedAddress,
 } from '@/services/utils';
 import {
   getPolkadotIdentityBalanceByAddress,
@@ -277,6 +272,8 @@ export default defineComponent({
         step2State.selectedAccount.address
       );
 
+      console.log('------ balance - ', balance);
+
       props.onConnectHdxAccount(step2State.selectedAccount, 0);
       step2State.openAccountsList = false;
     };
@@ -289,7 +286,7 @@ export default defineComponent({
       xhdxBalanceFormatted,
       hdxClaimableAmountFormatted,
       hdxOwnedBalanceFormatted,
-      getPolkadotFormattedAddress,
+      getHydraDxFormattedAddress,
     };
   },
 });

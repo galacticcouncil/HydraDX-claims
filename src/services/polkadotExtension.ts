@@ -36,20 +36,11 @@ interface SavedProperties {
   [name: string]: ExtensionProperties;
 }
 
-// type TriggerFn = (counter: number) => void;
-
-// let triggerCount = 0;
-// const triggers = new Map<string, TriggerFn>();
-
 const extStore = reactive({
   extensions: [] as ExtensionKnown[],
   properties: {} as SavedProperties,
   genesisHash: '' as string,
 });
-
-// function triggerAll(): void {
-//   [...triggers.values()].forEach(trigger => trigger(Date.now()));
-// }
 
 // save the properties for a specific extension
 function saveProperties(
@@ -82,7 +73,6 @@ function hasCurrentProperties(
   //@ts-ignore
   if (!allProperties[extension.name]) {
     saveProperties(api, extension);
-
     return true;
   }
 
@@ -147,7 +137,6 @@ async function getExtensionInfo(
 
           if (isOk) {
             saveProperties(api, extension);
-            // triggerAll();
           }
         } catch (error) {
           // ignore
@@ -161,7 +150,6 @@ async function getExtensionInfo(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getKnown(
   api: ApiPromise,
   extensions: InjectedExtension[]
@@ -182,7 +170,6 @@ export const initPolkadotExtension: (
 
   try {
     injectedExt = await web3Enable('CLAIM.HYDRA.DX');
-    console.log('injectedExt - ', injectedExt);
 
     if (!injectedExt || injectedExt.length === 0) {
       throw Error('no_extension');
@@ -193,16 +180,13 @@ export const initPolkadotExtension: (
     const filteredExts: Extensions = await filterAll(api, extStore.extensions);
     const systemChain = await api.rpc.system.chain();
 
-    console.log('extStore.extensions ---- ', extStore.extensions);
-    console.log('filteredExts ---- ', filteredExts);
-
     // Check if user should update metadata : if current metadata of extension is empty
     // or check spec version in extension and api by genesisHash (api.genesisHash.toHex(),)
 
     if (filteredExts.count > 0) {
       const chainInfo = {
         chain: systemChain.toString(),
-        color: '#0044ff',
+        color: '#0044ff', // TODO must be changed
         genesisHash: extStore.genesisHash,
         icon: 'substrate',
         metaCalls: Buffer.from(
