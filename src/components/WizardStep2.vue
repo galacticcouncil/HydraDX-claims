@@ -16,22 +16,11 @@
       {{ ethAccountData.connectedAccount }}
     </div>
     <a
-      v-if="
-        !hdxAccountData.connectedAccount && !step2State.showInstallPolkadotExt
-      "
+      v-if="!hdxAccountData.connectedAccount"
       class="hdx-btn connect-metamask"
       href="#"
       @click.prevent="onConnectPolkadotExtClick"
-      >Connect Polkadot.js</a
-    >
-    <a
-      v-if="
-        !hdxAccountData.connectedAccount && step2State.showInstallPolkadotExt
-      "
-      class="hdx-btn install-polkadot-ext"
-      target="_blank"
-      href="https://polkadot.js.org/extension/"
-      >Install Polkadot.js</a
+      >Connect HydraDX account</a
     >
 
     <div
@@ -116,14 +105,13 @@ import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import XhdxBalanceDetails from '@/components/XhdxBalanceDetails.vue';
 import HdxBalanceDetails from '@/components/HdxBalanceDetails.vue';
 
-interface Step2State {
+type Step2State = {
   isPDExtensionApproveWaiting: boolean;
   isPDExtensionApproved: boolean;
   selectedAccount: InjectedAccountWithMeta | null;
   allAvailableAccounts: InjectedAccountWithMeta[];
   openAccountsList: boolean;
-  showInstallPolkadotExt: boolean;
-}
+};
 
 export default defineComponent({
   name: 'WizardStep2',
@@ -170,61 +158,40 @@ export default defineComponent({
       selectedAccount: null,
       allAvailableAccounts: [],
       openAccountsList: false,
-      showInstallPolkadotExt: false,
     } as Step2State);
 
-    // watch(
-    //   () => step1State.manuallyEnteredAccount,
-    //   newVal => {
-    //     step1State.manuallyEnteredAccountValid = props.wizardState.web3Inst.utils.isAddress(
-    //       newVal
-    //     );
-    //   }
-    // );
-
-    onMounted(async () => {
-      step2State.showInstallPolkadotExt =
-        //@ts-ignore
-        !window.injectedWeb3 || !window.injectedWeb3['polkadot-js'];
-      console.log('isWeb3Injected - ', isWeb3Injected);
-      //@ts-ignore
-      console.log('window.injectedWeb3 - ', window.injectedWeb3);
-
-    });
-
     const onConnectPolkadotExtClick = async () => {
-      let allInjected = await initPolkadotExtension(
-        extInstance => {
-          console.log('initPolkadotExtension - +++');
-          if (extInstance) {
-            step2State.isPDExtensionApproveWaiting = false;
-            step2State.isPDExtensionApproved = true;
-          } else {
-            step2State.isPDExtensionApproveWaiting = false;
-            step2State.isPDExtensionApproved = false;
-            return;
-            //TODO add reject notice
-          }
-        },
-        e => {
-          if (e && e.message === 'no_extension') {
-            step2State.showInstallPolkadotExt = true;
-          }
+      // let allInjected = await initPolkadotExtension(
+      //   extInstance => {
+      //     console.log('initPolkadotExtension - +++');
+      //     if (extInstance) {
+      //       step2State.isPDExtensionApproveWaiting = false;
+      //       step2State.isPDExtensionApproved = true;
+      //     } else {
+      //       step2State.isPDExtensionApproveWaiting = false;
+      //       step2State.isPDExtensionApproved = false;
+      //       return;
+      //       //TODO add reject notice
+      //     }
+      //   },
+      //   e => {
+      //     if (e && e.message === 'no_extension') {
+      //       step2State.showInstallPolkadotExt = true;
+      //     }
+      //
+      //     step2State.isPDExtensionApproveWaiting = false;
+      //     step2State.isPDExtensionApproved = false;
+      //     //TODO add reject notice
+      //     return;
+      //   }
+      // );
+      //
+      // console.log('isWeb3Injected - ', isWeb3Injected);
 
-          step2State.isPDExtensionApproveWaiting = false;
-          step2State.isPDExtensionApproved = false;
-          //TODO add reject notice
-          return;
-        }
-      );
-
-      console.log('isWeb3Injected - ', isWeb3Injected);
-
-      if (!allInjected) return;
+      if (!props.hdxAccountData.isPolkadotExtAvailable) return;
 
       const allAccounts = await getHydraDxAccountsFromExtension();
 
-      console.log('allInjected - ', allInjected);
       console.log('allAccounts - ', allAccounts);
 
       step2State.allAvailableAccounts = allAccounts;

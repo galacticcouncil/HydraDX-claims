@@ -14,7 +14,9 @@
           </div>
           <LoadingCover
             :wizard-state="wizardState"
+            :hdx-account-data="hdxAccountData"
             :on-reconnect-click="onReconnectClick"
+            :on-connect-polkadot-ext="onConnectPolkadotExt"
           />
           <WizardStep1
             v-if="wizardState.wizardStep === 1"
@@ -75,6 +77,11 @@ import {
 } from '@/services/polkadotUtils';
 import { isValueZero } from '@/services/utils';
 import type { ClaimProcessStatus } from '@/types';
+import {
+  getHydraDxAccountsFromExtension,
+  initPolkadotExtension,
+} from '@/services/polkadotExtension';
+import { isWeb3Injected } from '@polkadot/extension-dapp';
 
 interface WizardState {
   wizardStep: number;
@@ -260,6 +267,37 @@ export default defineComponent({
       });
     };
 
+    const onConnectPolkadotExt = async () => {
+      let allInjected = await initPolkadotExtension(
+        extInstance => {
+          console.log('initPolkadotExtension - +++');
+          // if (extInstance) {
+          //   step2State.isPDExtensionApproveWaiting = false;
+          //   step2State.isPDExtensionApproved = true;
+          // } else {
+          //   step2State.isPDExtensionApproveWaiting = false;
+          //   step2State.isPDExtensionApproved = false;
+          //   return;
+          //   //TODO add reject notice
+          // }
+        },
+        e => {
+          // if (e && e.message === 'no_extension') {
+          //   step2State.showInstallPolkadotExt = true;
+          // }
+          //
+          // step2State.isPDExtensionApproveWaiting = false;
+          // step2State.isPDExtensionApproved = false;
+          // //TODO add reject notice
+          // return;
+        }
+      );
+
+      console.log('allInjected - ', allInjected);
+
+      if (allInjected) hdxAccountData.isPolkadotExtAvailable = true;
+    };
+
     onMounted(async () => {
       if (
         // @ts-ignore
@@ -290,6 +328,7 @@ export default defineComponent({
       nextStepClick,
       onReconnectClick,
       setClaimProcessStatus,
+      onConnectPolkadotExt,
     };
   },
 });
