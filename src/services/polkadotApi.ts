@@ -25,6 +25,7 @@ export const setApiConnection = (
    * If connection is not recovered, API listener "error" will be executed.
    */
   const recoverConnection = (error: Error) => {
+    console.log('recoverConnection');
     if (reconnectionsIndex < reconnectionsNumber) {
       setTimeout(() => {
         wsProvider.connect();
@@ -46,7 +47,11 @@ export const setApiConnection = (
   });
 
   wsProvider.on('connected', async () => {
-    if (polkadotApiInstance) return polkadotApiInstance;
+    console.log("wsProvider.on('connected'");
+    if (polkadotApiInstance) {
+      apiListeners.ready(polkadotApiInstance);
+      return;
+    }
 
     await new ApiPromise({
       provider: wsProvider,
@@ -138,14 +143,14 @@ export const setApiConnection = (
       },
     })
       .on('error', e => {
+        console.log('ApiPromise - error ');
         if (!isDisconnection) {
-          console.log('ApiPromise - error ');
           apiListeners.error(e);
         }
       })
       .on('connected', () => {
-        apiListeners.connected();
         console.log('ApiPromise - connected ');
+        apiListeners.connected();
         isDisconnection = false;
       })
       .on('disconnected', () => {

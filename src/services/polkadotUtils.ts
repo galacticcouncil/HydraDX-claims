@@ -30,13 +30,13 @@ export const getPolkadotApiInstance = () => polkadotApiInstance;
 
 export const getClaimableHdxAmountByAddress: (
   address: string
-) => Promise<string | null> = async (address = '') => {
+) => Promise<string> = async (address = '') => {
   try {
     const balance = await polkadotApiInstance.query.claims.claims(address);
     return balance.toString();
   } catch (e) {
     console.log(e);
-    return null;
+    return '0';
   }
 };
 

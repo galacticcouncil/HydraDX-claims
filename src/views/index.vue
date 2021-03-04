@@ -12,41 +12,10 @@
           <div class="wizard-progress-status">
             <ProgressLine :step="wizardState.wizardStep" />
           </div>
-          <div
-            v-show="wizardState.loading || wizardState.claiming.inProgress"
-            class="loading-cover-message"
-          >
-            <div
-              v-show="
-                !wizardState.isReconnectBtn && !wizardState.claiming.inProgress
-              "
-            >
-              Loading ...
-            </div>
-            <div
-              v-show="
-                !wizardState.isReconnectBtn && wizardState.claiming.inProgress
-              "
-            >
-              Claiming ...
-            </div>
-            <div
-              v-show="
-                !wizardState.isReconnectBtn &&
-                wizardState.claiming.inProgress &&
-                wizardState.claiming.resultMessage.length > 0
-              "
-            >
-              {{ wizardState.claiming.resultMessage }}
-            </div>
-            <a
-              v-show="wizardState.isReconnectBtn"
-              href="#"
-              @click.prevent="onReconnectClick"
-              class="hdx-btn loading-cover-btn reconnect-btn"
-              >Reconnect</a
-            >
-          </div>
+          <LoadingCover
+            :wizard-state="wizardState"
+            :on-reconnect-click="onReconnectClick"
+          />
           <WizardStep1
             v-if="wizardState.wizardStep === 1"
             :wizard-state="wizardState"
@@ -63,7 +32,6 @@
             :on-connect-hdx-account="onConnectHdxAccount"
             :is-next-step-valid="isNextStepValid"
             :next-step-click="nextStepClick"
-            :on-fetch-claimable-hdx-amount="onFetchClaimableHdxAmount"
           />
           <WizardStep3
             v-if="wizardState.wizardStep === 3"
@@ -89,6 +57,7 @@
 import { defineComponent, onMounted, reactive, computed, watch } from 'vue';
 
 import ProgressLine from '@/components/ProgressLine.vue';
+import LoadingCover from '@/components/LoadingCover.vue';
 import WizardStep1 from '@/components/WizardStep1.vue';
 import WizardStep2 from '@/components/WizardStep2.vue';
 import WizardStep3 from '@/components/WizardStep3.vue';
@@ -96,12 +65,14 @@ import WizardStep4 from '@/components/WizardStep4.vue';
 import {
   initWeb3Instance,
   getWeb3Instance,
-  getXhdxBalanceByAddress,
-  getOwnedHdxBalanceByAddress,
+  getXhdxAmountByAddress,
 } from '@/services/ethUtils';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import Web3 from 'web3';
-import { initPolkadotApiInstance } from '@/services/polkadotUtils';
+import {
+  getClaimableHdxAmountByAddress,
+  initPolkadotApiInstance,
+} from '@/services/polkadotUtils';
 import { isValueZero } from '@/services/utils';
 import type { ClaimProcessStatus } from '@/types';
 
@@ -116,9 +87,10 @@ interface WizardState {
 interface EthAccountData {
   isMetamaskAvailable: boolean;
   connectedAccount: string;
-  xhdxBalance: string;
-  isXhdxBalanceZero: boolean;
-  hdxOwnedBalance: string;
+  xhdxBoughtBalance: string;
+  isXhdxTotalBalanceZero: boolean;
+  xhdxTotalBalance: string;
+  xhdxGasRefundBalance: string;
   claimableHdxAmount: string;
   isClaimableHdxAmountZero: boolean;
 }
@@ -130,6 +102,7 @@ interface HdxAccountData {
 
 export default defineComponent({
   components: {
+    LoadingCover,
     ProgressLine,
     WizardStep1,
     WizardStep2,
@@ -156,9 +129,14 @@ export default defineComponent({
     const ethAccountData = reactive({
       isMetamaskAvailable: false,
       connectedAccount: '',
-      xhdxBalance: '0',
-      isXhdxBalanceZero: true,
-      hdxOwnedBalance: '0',
+
+      isXhdxTotalBalanceZero: true,
+      xhdxTotalBalance: '0',
+
+      xhdxBoughtBalance: '0',
+
+      xhdxGasRefundBalance: '0',
+
       claimableHdxAmount: '0',
       isClaimableHdxAmountZero: true,
     } as EthAccountData);
@@ -170,16 +148,18 @@ export default defineComponent({
     } as HdxAccountData);
 
     watch(
-      () => ethAccountData.xhdxBalance,
+      () => ethAccountData.xhdxTotalBalance,
       newVal => {
         const isValZero = isValueZero(newVal);
-        ethAccountData.isXhdxBalanceZero = isValZero;
-        wizardState.stepValidationStatus[0] = !isValZero;
+        ethAccountData.isXhdxTotalBalanceZero = isValZero;
+        wizardState.stepValidationStatus[0] =
+          !isValZero && !ethAccountData.isClaimableHdxAmountZero;
       }
     );
     watch(
       () => hdxAccountData.connectedAccount,
       newVal => {
+        //TODO Don't delete!!! For debug purpose!!!
         // wizardState.stepValidationStatus[1] =
         //   !!newVal && !ethAccountData.isClaimableHdxAmountZero;
         wizardState.stepValidationStatus[1] = !!newVal;
@@ -188,7 +168,8 @@ export default defineComponent({
     watch(
       () => ethAccountData.isClaimableHdxAmountZero,
       newVal => {
-        if (!newVal) wizardState.stepValidationStatus[2] = false;
+        wizardState.stepValidationStatus[0] =
+          !newVal && !ethAccountData.isXhdxTotalBalanceZero;
       }
     );
 
@@ -211,11 +192,26 @@ export default defineComponent({
     });
 
     const onConnectEthAccount = async (account: string) => {
-      ethAccountData.xhdxBalance = await getXhdxBalanceByAddress(account);
-      ethAccountData.hdxOwnedBalance = await getOwnedHdxBalanceByAddress(
-        account
+      ethAccountData.xhdxBoughtBalance = await getXhdxAmountByAddress(
+        account,
+        'bought'
+      );
+      ethAccountData.xhdxTotalBalance = await getXhdxAmountByAddress(
+        account,
+        'totalClaim'
+      );
+      ethAccountData.xhdxGasRefundBalance = await getXhdxAmountByAddress(
+        account,
+        'gasRefund'
       );
       ethAccountData.connectedAccount = account;
+
+      ethAccountData.claimableHdxAmount = await getClaimableHdxAmountByAddress(
+        account
+      );
+      ethAccountData.isClaimableHdxAmountZero = isValueZero(
+        ethAccountData.claimableHdxAmount
+      );
     };
     const onConnectHdxAccount = async (
       account: InjectedAccountWithMeta,
@@ -223,11 +219,6 @@ export default defineComponent({
     ) => {
       hdxAccountData.hdxBalance = hdxBalance;
       hdxAccountData.connectedAccount = account;
-    };
-
-    const onFetchClaimableHdxAmount = async (amount: string) => {
-      ethAccountData.claimableHdxAmount = amount;
-      ethAccountData.isClaimableHdxAmountZero = isValueZero(amount);
     };
 
     const onReconnectClick = () => {
@@ -279,6 +270,14 @@ export default defineComponent({
         ethAccountData.isMetamaskAvailable = true;
       }
       await initPolkadotApiInstanceWrapper();
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+          console.log('Browser tab is hidden');
+        } else {
+          console.log('Browser tab is visible');
+        }
+      });
     });
 
     return {
@@ -288,7 +287,6 @@ export default defineComponent({
       isNextStepValid,
       onConnectEthAccount,
       onConnectHdxAccount,
-      onFetchClaimableHdxAmount,
       nextStepClick,
       onReconnectClick,
       setClaimProcessStatus,

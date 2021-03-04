@@ -1,8 +1,9 @@
 <template>
   <div class="wizard-step-container step-1">
-    <div v-if="!ethAccountData.isXhdxBalanceZero" class="text-label">
-      Owned Balance: {{ xhdxBalanceFormatted }} xHDX
-    </div>
+    <XhdxBalanceDetails
+      v-if="!ethAccountData.isXhdxTotalBalanceZero"
+      :eth-account-data="ethAccountData"
+    />
 
     <div v-show="step1State.notClaimableAddress" class="text-label">
       There is not a claim associated with this address ({{
@@ -20,7 +21,9 @@
       }"
       href="#"
       @click.prevent="onConnectMetamaskClick"
-      >Connect Metamask</a
+      ><span v-if="!ethAccountData.isMetamaskAvailable"
+        >Metamask is not connected</span
+      ><span v-else>Connect Metamask</span></a
     >
     <div
       v-if="ethAccountData.connectedAccount.length > 0"
@@ -41,6 +44,14 @@
       v-model="step1State.manuallyEnteredAccount"
     />
 
+    <HdxBalanceDetails
+      v-if="ethAccountData.connectedAccount.length !== 0"
+      :eth-account-data="ethAccountData"
+    />
+    <!--    <div v-if="ethAccountData.connectedAccount.length !== 0" class="text-label">-->
+    <!--      HDX to Claim: {{ hdxClaimableAmountFormatted }} HDX-->
+    <!--    </div>-->
+
     <a
       v-if="
         step1State.manuallyEnteredAccount.length > 0 &&
@@ -50,7 +61,7 @@
       :class="{ disabled: !step1State.manuallyEnteredAccountValid }"
       href="#"
       @click.prevent="onConnectEthAccountClick"
-      >Connect
+      >Continue
       <span>&#10145;</span>
     </a>
 
@@ -71,6 +82,8 @@ import { defineComponent, computed, watch, reactive } from 'vue';
 import { getFormattedBalance } from '@/services/utils';
 import { isEhtAddressClaimable } from '@/services/ethUtils';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
+import XhdxBalanceDetails from '@/components/XhdxBalanceDetails.vue';
+import HdxBalanceDetails from '@/components/HdxBalanceDetails.vue';
 
 interface Step1State {
   manuallyEnteredAccount: string;
@@ -80,6 +93,10 @@ interface Step1State {
 
 export default defineComponent({
   name: 'WizardStep1',
+  components: {
+    XhdxBalanceDetails,
+    HdxBalanceDetails,
+  },
   props: {
     wizardState: {
       type: Object,
@@ -122,13 +139,6 @@ export default defineComponent({
       }
     );
 
-    const xhdxBalanceFormatted = computed(() => {
-      if (!props.ethAccountData.isXhdxBalanceZero) {
-        return getFormattedBalance(props.ethAccountData.xhdxBalance);
-      }
-      return '0';
-    });
-
     const onConnectMetamaskClick = async () => {
       try {
         // @ts-ignore
@@ -163,7 +173,6 @@ export default defineComponent({
     };
 
     return {
-      xhdxBalanceFormatted,
       onConnectMetamaskClick,
       onConnectEthAccountClick,
       step1State,

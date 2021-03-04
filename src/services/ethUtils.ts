@@ -11,13 +11,15 @@ const contractAddress = '0x6FCb6408499a7c0f242E32D77EB51fFa1dD28a7E';
 let web3Inst: Web3;
 let tokenContract: Contract;
 
+type EthAddressesScopeItem = {
+  totalClaim: string;
+  bought: string;
+  gasRefund: string;
+  refundedTxs: string[];
+};
+
 interface EthAddressesScope {
-  [key: string]: {
-    totalClaim: string;
-    bought: string;
-    gasRefund: string;
-    refundedTxs: string[];
-  };
+  [key: string]: EthAddressesScopeItem;
 }
 
 /**
@@ -44,8 +46,6 @@ const fetchEthAddressesScope: (
 
 export const initWeb3Instance = async () => {
   web3Inst = new Web3(Web3.givenProvider);
-  // tokenContract = new web3Inst.eth.Contract(ethAbi as AbiItem[]).at(contractAddress);
-  // await fetchEthAddressesScope();
   tokenContract = new web3Inst.eth.Contract(
     ethAbi as AbiItem[],
     contractAddress
@@ -55,24 +55,15 @@ export const initWeb3Instance = async () => {
 export const getWeb3Instance = () => web3Inst;
 export const getTokenInstance = () => tokenContract;
 
-export const getXhdxBalanceByAddress: (
-  address: string
-) => Promise<string> = async address => {
+export const getXhdxAmountByAddress: (
+  address: string,
+  amountName: string
+) => Promise<string> = async (address, amountName) => {
   try {
     return ethAddressesScope
-      ? ethAddressesScope[address.trim().toLowerCase()].bought
-      : '0';
-  } catch (e) {
-    console.log(e);
-    return '0';
-  }
-};
-export const getOwnedHdxBalanceByAddress: (
-  address: string
-) => Promise<string> = async address => {
-  try {
-    return ethAddressesScope
-      ? ethAddressesScope[address.trim().toLowerCase()].totalClaim
+      ? (ethAddressesScope[address.trim().toLowerCase()][
+          amountName as keyof EthAddressesScopeItem
+        ] as string)
       : '0';
   } catch (e) {
     console.log(e);
@@ -133,9 +124,3 @@ export const signMessageWithMetaMask: (
   // jsonrpc: "2"
   // result: "0xb2bc7ba434aca4a5130e880
 };
-
-// const addressBalance = await tokenContract.methods
-//   .balanceOf(address)
-//   .call();
-// console.log(addressBalance);
-// return addressBalance;
