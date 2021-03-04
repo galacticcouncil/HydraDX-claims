@@ -1,6 +1,5 @@
 <template>
   <div class="xhdx-amounts-indicator">
-    <div class="total-amount">Total: {{ xhdxTotalBalanceFormatted }} xHDX</div>
     <div class="amount-details">
       <div class="amount-details-item">
         <span>Bought:</span>
