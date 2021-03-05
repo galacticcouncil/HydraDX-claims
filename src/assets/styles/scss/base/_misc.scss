@@ -5,8 +5,11 @@
   border-width: 0px;
 }
 
-body {
+html {
   @include crt-effect();
+}
+
+body {
   cursor: crosshair;
   background-color: $hdx-bgr-blue;
 }
