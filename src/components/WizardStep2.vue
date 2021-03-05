@@ -7,11 +7,6 @@
         hdxAccountData.connectedAccount)
     "
   >
-    <XhdxBalanceDetails
-      v-if="!ethAccountData.isXhdxTotalBalanceZero"
-      :eth-account-data="ethAccountData"
-    />
-
     <div class="selected-account-view eth-account">
       {{ ethAccountData.connectedAccount }}
     </div>
