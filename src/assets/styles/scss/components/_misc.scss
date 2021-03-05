@@ -1,37 +1,27 @@
 .xhdx-amounts-indicator {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 30px;
-  border: 1px solid $hdx-light-blue;
+  border: 2px solid $hdx-light-blue;
+  margin-top: 2em;
+  margin-bottom: 1.5em;
 
-  .total-amount {
-    background-color: $hdx-light-blue;
-    color: $hdx-blue;
-    flex: 1;
-    font-size: 16px;
-
-    padding: 5px;
-    border-bottom: 1px solid $hdx-light-blue;
-
-  }
   .amount-details {
     display: flex;
     flex-direction: row;
   }
   .amount-details-item {
     flex: 1;
-    padding: 5px;
+
+    padding: 0.5em;
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 14px;
 
     &:first-of-type {
-      border-right: 1px solid $hdx-light-blue;
+      border-right: 2px solid $hdx-light-blue;
     }
   }
 }
 
 .hdx-amount-indicator {
-  margin-top: 30px;
+  margin-top: 1em;
 }

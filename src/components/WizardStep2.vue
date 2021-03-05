@@ -76,14 +76,14 @@
         extension. Please, create new one or attach existing to extension.
       </div>
     </div>
-    <a
-      class="hdx-btn select-pd-account"
-      :class="{ disabled: !step2State.selectedAccount }"
-      href="#"
-      @click.prevent="connectPdAccount"
-      >OK
-    </a>
   </div>
+  <a
+    class="hdx-btn select-pd-account"
+    :class="{ disabled: !step2State.selectedAccount }"
+    href="#"
+    @click.prevent="connectPdAccount"
+    >OK
+  </a>
 </template>
 
 <script lang="ts">

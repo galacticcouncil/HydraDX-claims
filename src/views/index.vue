@@ -3,7 +3,7 @@
     <div class="hdx-claim-inner-container">
       <header class="main-header">
         <a href="/">
-          <img src="@/assets/images/blue-logo.svg" alt="claim.hydra.dx" />
+          <img src="@/assets/images/eye-logo.png" alt="claim.hydra.dx" />
           <h1>claim.hydra.dx</h1>
         </a>
       </header>

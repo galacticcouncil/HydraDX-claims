@@ -6,9 +6,8 @@
     />
 
     <div v-show="step1State.notClaimableAddress" class="text-label">
-      There is not a claim associated with this address ({{
-        step1State.notClaimableAddress
-      }}). Did you use the right one?
+      No claim associated with address:<br />
+      {{ step1State.notClaimableAddress }}<br />
     </div>
 
     <a
@@ -40,7 +39,7 @@
       v-if="ethAccountData.connectedAccount.length === 0"
       type="text"
       class="hdx-input eth-addres"
-      placeholder="ETH address"
+      placeholder="ETH address..."
       v-model="step1State.manuallyEnteredAccount"
     />
 

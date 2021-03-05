@@ -11,7 +11,7 @@
     <input
       type="text"
       class="hdx-input response-input"
-      placeholder="Response"
+      placeholder="Response..."
       v-model="step3State.responseValue"
       :disabled="step3State.isResponseInputDisabled"
     />
