@@ -4,7 +4,11 @@ import {
   InjectedMetadataKnown,
   MetadataDef,
 } from '@polkadot/extension-inject/types';
-import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
+import {
+  web3Accounts,
+  web3Enable,
+  web3AccountsSubscribe,
+} from '@polkadot/extension-dapp';
 import { ApiPromise } from '@polkadot/api';
 import { reactive, unref } from 'vue';
 import { getPolkadotApiInstance } from '@/services/polkadotUtils';
@@ -235,4 +239,10 @@ export const getHydraDxAccountsFromExtension: () => Promise<
       extStore.genesisHash === account.meta.genesisHash
     );
   });
+};
+
+export const addPolkadotExtListener: (
+  cb: (accounts: InjectedAccountWithMeta[]) => void
+) => Promise<void> = async cb => {
+  await web3AccountsSubscribe(cb);
 };

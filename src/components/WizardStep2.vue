@@ -20,7 +20,7 @@
 
     <div
       v-if="hdxAccountData.connectedAccount"
-      class="selected-account-view eth-account"
+      class="selected-account-view hydradx-account"
     >
       {{ getHydraDxFormattedAddress(hdxAccountData.connectedAccount.address) }}
     </div>
@@ -94,6 +94,7 @@ import {
 import {
   initPolkadotExtension,
   getHydraDxAccountsFromExtension,
+  addPolkadotExtListener,
 } from '@/services/polkadotExtension';
 import { isWeb3Injected } from '@polkadot/extension-dapp';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
@@ -105,6 +106,7 @@ type Step2State = {
   isPDExtensionApproved: boolean;
   selectedAccount: InjectedAccountWithMeta | null;
   allAvailableAccounts: InjectedAccountWithMeta[];
+  currentExtAccountsList: InjectedAccountWithMeta[];
   openAccountsList: boolean;
 };
 
@@ -141,6 +143,14 @@ export default defineComponent({
       type: Function,
       default: () => {},
     },
+    goToStep: {
+      type: Function,
+      default: () => {},
+    },
+    setGlobalNotice: {
+      type: Function,
+      default: () => {},
+    },
     isNextStepValid: {
       type: Boolean,
       default: false,
@@ -153,6 +163,7 @@ export default defineComponent({
       selectedAccount: null,
       allAvailableAccounts: [],
       openAccountsList: false,
+      currentExtAccountsList: [],
     } as Step2State);
 
     const onConnectPolkadotExtClick = async () => {
@@ -186,6 +197,41 @@ export default defineComponent({
       if (!props.hdxAccountData.isPolkadotExtAvailable) return;
 
       const allAccounts = await getHydraDxAccountsFromExtension();
+
+      addPolkadotExtListener(async accounts => {
+        console.log('addPolkadotExtListener - ', accounts);
+
+        if (step2State.currentExtAccountsList.length !== accounts.length) {
+          console.log(123);
+          step2State.allAvailableAccounts = await getHydraDxAccountsFromExtension();
+        }
+        step2State.currentExtAccountsList = accounts;
+
+        if (
+          (props.hdxAccountData.connectedAccount ||
+            step2State.selectedAccount) &&
+          !accounts.find(extAcc => {
+            return (
+              (props.hdxAccountData.connectedAccount &&
+                extAcc.address ===
+                  props.hdxAccountData.connectedAccount.address) ||
+              (step2State.selectedAccount &&
+                extAcc.address === step2State.selectedAccount.address)
+            );
+          })
+        ) {
+          props.setGlobalNotice(
+            true,
+            'Previously selected HydraDX account is not available anymore. Please, select another one.'
+          );
+          props.goToStep(2);
+          step2State.selectedAccount = null;
+          props.onConnectHdxAccount(null, '0');
+          setTimeout(() => {
+            props.setGlobalNotice(false);
+          }, 5000);
+        }
+      });
 
       console.log('allAccounts - ', allAccounts);
 

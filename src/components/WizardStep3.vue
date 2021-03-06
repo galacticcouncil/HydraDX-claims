@@ -16,18 +16,32 @@
       :disabled="step3State.isResponseInputDisabled"
     />
     <a
-      v-show="step3State.responseValueForSend.length === 0"
+      v-show="
+        ethAccountData.isMetamaskAvailable &&
+        step3State.responseValueForSend.length === 0
+      "
       class="hdx-btn next-step"
       href="#"
       @click.prevent="onSignMessageClick"
       >SIGN
     </a>
     <a
-      v-show="step3State.responseValueForSend.length > 0"
+      v-show="
+        !ethAccountData.isMetamaskAvailable ||
+        step3State.responseValueForSend.length > 0
+      "
+      :class="{ disabled: !step3State.isSignatureValid }"
       class="hdx-btn next-step"
       href="#"
       @click.prevent="onClaimClick"
-      >CLAIM
+      >{{
+        (!step3State.isSignatureValid &&
+          step3State.responseValueForSend.length === 0) ||
+        (step3State.isSignatureValid &&
+          step3State.responseValueForSend.length > 0)
+          ? 'CLAIM'
+          : 'Signature in not valid'
+      }}
     </a>
   </div>
 </template>
@@ -35,7 +49,10 @@
 <script lang="ts">
 import { defineComponent, reactive, onMounted, watch, PropType } from 'vue';
 import ClipboardJS from 'clipboard';
-import { signMessageWithMetaMask } from '@/services/ethUtils';
+import {
+  signMessageWithMetaMask,
+  validateMessageSignature,
+} from '@/services/ethUtils';
 import { claimBalance, accountToHex } from '@/services/polkadotUtils';
 import { getHydraDxFormattedAddress } from '@/services/utils';
 import type { ClaimProcessStatus } from '@/types';
@@ -47,6 +64,7 @@ interface Step3State {
   clipboardInst: any;
   copied: boolean;
   isResponseInputDisabled: boolean;
+  isSignatureValid: boolean;
 }
 
 export default defineComponent({
@@ -93,6 +111,7 @@ export default defineComponent({
       clipboardInst: null,
       copied: false,
       isResponseInputDisabled: false,
+      isSignatureValid: false,
     } as Step3State);
 
     onMounted(async () => {
@@ -123,6 +142,21 @@ export default defineComponent({
         } catch (e) {
           step3State.responseValueForSend = newVal;
         }
+      }
+    );
+
+    watch(
+      () => step3State.responseValueForSend,
+      async (newVal, oldVal) => {
+        if (newVal === oldVal) return;
+
+        step3State.isSignatureValid = await validateMessageSignature(
+          props.ethAccountData.connectedAccount,
+          step3State.messageValue,
+          newVal
+        );
+
+        console.log('isSignatureValid - ', step3State.isSignatureValid);
       }
     );
 

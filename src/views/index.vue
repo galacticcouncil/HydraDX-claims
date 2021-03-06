@@ -34,6 +34,8 @@
             :on-connect-hdx-account="onConnectHdxAccount"
             :is-next-step-valid="isNextStepValid"
             :next-step-click="nextStepClick"
+            :go-to-step="goToStep"
+            :set-global-notice="setGlobalNotice"
           />
           <WizardStep3
             v-if="wizardState.wizardStep === 3"
@@ -78,7 +80,7 @@ import {
 import { isValueZero } from '@/services/utils';
 import type { ClaimProcessStatus } from '@/types';
 import {
-  getHydraDxAccountsFromExtension,
+  addPolkadotExtListener,
   initPolkadotExtension,
 } from '@/services/polkadotExtension';
 import { isWeb3Injected } from '@polkadot/extension-dapp';
@@ -90,6 +92,10 @@ interface WizardState {
   loading: boolean;
   claiming: ClaimProcessStatus;
   isReconnectBtn: boolean;
+  globalNotice: {
+    open: boolean;
+    message: string;
+  };
 }
 interface EthAccountData {
   isMetamaskAvailable: boolean;
@@ -130,6 +136,10 @@ export default defineComponent({
         resultStatus: 0,
         resultMessage: '',
       },
+      globalNotice: {
+        open: false,
+        message: '',
+      },
       isReconnectBtn: false,
     } as WizardState);
 
@@ -150,6 +160,7 @@ export default defineComponent({
 
     const hdxAccountData = reactive({
       isPolkadotExtAvailable: false,
+      currentExtAccountsList: [],
       connectedAccount: null,
       hdxBalance: '0',
     } as HdxAccountData);
@@ -243,6 +254,13 @@ export default defineComponent({
       wizardState.wizardStep++;
     };
 
+    const goToStep = (step: number) => {
+      wizardState.wizardStep = step;
+    };
+    const setGlobalNotice = (open: boolean, message: string = '') => {
+      wizardState.globalNotice = { open, message };
+    };
+
     const initPolkadotApiInstanceWrapper = async () => {
       await initPolkadotApiInstance({
         connected: () => {
@@ -329,6 +347,8 @@ export default defineComponent({
       onReconnectClick,
       setClaimProcessStatus,
       onConnectPolkadotExt,
+      goToStep,
+      setGlobalNotice,
     };
   },
 });

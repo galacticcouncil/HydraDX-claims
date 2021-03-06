@@ -3,10 +3,22 @@
     v-show="
       wizardState.loading ||
       wizardState.claiming.inProgress ||
-      !hdxAccountData.isPolkadotExtAvailable
+      !hdxAccountData.isPolkadotExtAvailable ||
+      wizardState.globalNotice.open
     "
     class="loading-cover-message"
   >
+    <div
+      class="global-notice-message"
+      v-show="
+        !wizardState.loading &&
+        !wizardState.isReconnectBtn &&
+        !wizardState.claiming.inProgress &&
+        wizardState.globalNotice.open
+      "
+    >
+      {{ wizardState.globalNotice.message }}
+    </div>
     <div
       v-show="
         wizardState.loading &&

@@ -83,7 +83,7 @@ export const claimBalance: (
                   resultStatus: 1,
                 });
               }
-              if (!isCompleted && status.isInBlock && method === 'Claimed') {
+              if (!isCompleted && status.isInBlock && method === 'Claim') {
                 statusCl({
                   inProgress: true,
                   completed: false,
@@ -91,7 +91,7 @@ export const claimBalance: (
                   resultMessage: 'Almost done! Request is already in block.',
                 });
               }
-              if (!isCompleted && status.isFinalized && method === 'Claimed') {
+              if (!isCompleted && status.isFinalized && method === 'Claim') {
                 isCompleted = true;
                 statusCl({
                   inProgress: false,

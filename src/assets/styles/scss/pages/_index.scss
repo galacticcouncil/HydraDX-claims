@@ -67,6 +67,7 @@
     max-width: 27em;
     padding: 2em;
     box-shadow: 0.5em 0.5em rgba($hdx-bgr-blue, 0.8);
+    position: relative;
 
     .loading-cover-message {
       position: absolute;
@@ -80,8 +81,13 @@
       justify-content: center;
       align-items: center;
       color: $hdx-light-blue;
+      padding: 10px;
 
       z-index: 5;
+
+      .global-notice-message {
+        font-size: 14px;
+      }
     }
 
     .next-step {
@@ -169,6 +175,10 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+
+      &.hydradx-account {
+        margin-top: 20px;
+      }
     }
 
     .sign-message-container {

@@ -5,7 +5,14 @@ import { AbiItem } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { JsonRpcPayload, JsonRpcResponse } from 'web3-core-helpers';
 
-import { fromRpcSig, isValidSignature } from 'ethereumjs-util';
+import {
+  fromRpcSig,
+  ecrecover,
+  pubToAddress,
+  bufferToHex,
+  toBuffer,
+  keccak,
+} from 'ethereumjs-util';
 
 const contractAddress = '0x6FCb6408499a7c0f242E32D77EB51fFa1dD28a7E';
 let web3Inst: Web3;
@@ -123,4 +130,32 @@ export const signMessageWithMetaMask: (
   // id: undefined
   // jsonrpc: "2"
   // result: "0xb2bc7ba434aca4a5130e880
+};
+
+export const validateMessageSignature: (
+  address: string,
+  message: string,
+  signature: string
+) => Promise<boolean> = async (address, message, signature) => {
+  try {
+    let messageFormatted: Buffer | string = message;
+
+    messageFormatted =
+      '\x19Ethereum Signed Message:\n' +
+      messageFormatted.length +
+      messageFormatted;
+
+    messageFormatted = keccak(toBuffer(Web3.utils.utf8ToHex(messageFormatted)));
+    const { v, r, s } = fromRpcSig(signature);
+    const pubKey = ecrecover(toBuffer(messageFormatted), v, r, s);
+    const addrBuf = pubToAddress(pubKey);
+    const addr = bufferToHex(addrBuf);
+
+    return addr === address;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+
+  return false;
 };
