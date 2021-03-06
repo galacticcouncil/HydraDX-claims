@@ -37,10 +37,10 @@
       v-show="
         !wizardState.isReconnectBtn &&
         wizardState.claiming.inProgress &&
-        wizardState.claiming.resultMessage.length > 0
+        wizardState.claiming.processMessage.length > 0
       "
     >
-      {{ wizardState.claiming.resultMessage }}
+      {{ wizardState.claiming.processMessage }}
     </div>
     <a
       v-show="wizardState.isReconnectBtn"
@@ -75,6 +75,17 @@
       @click.prevent="onConnectPolkadotExt"
       >Connect Polkadot.js</a
     >
+    <div
+      v-if="
+        !wizardState.isReconnectBtn &&
+        !wizardState.loading &&
+        !wizardState.claiming.inProgress &&
+        !hdxAccountData.isPolkadotExtAvailable &&
+        !loadingCoverState.isInjectedWeb3
+      "
+    >
+      Please use Chrome or Firefox with respective polkadot{.js}
+    </div>
     <a
       v-if="
         !wizardState.isReconnectBtn &&

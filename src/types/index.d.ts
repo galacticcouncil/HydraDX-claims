@@ -5,6 +5,7 @@ export type ClaimProcessStatus = {
   completed: boolean;
   resultStatus: number;
   resultMessage?: string;
+  processMessage?: string;
 };
 
 export type ApiListeners = {

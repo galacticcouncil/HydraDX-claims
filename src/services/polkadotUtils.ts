@@ -47,6 +47,8 @@ export const claimBalance: (
 ) => Promise<void> = async (sign, account, statusCl) => {
   const signer = await getSinger(account);
   let isCompleted = false;
+  //TODO text must be updated
+  const nodeErrorMessages = ['Message signature is wrong', 'Nothing to claim'];
 
   try {
     statusCl({
@@ -88,7 +90,7 @@ export const claimBalance: (
                   inProgress: true,
                   completed: false,
                   resultStatus: 0,
-                  resultMessage: 'Almost done! Request is already in block.',
+                  processMessage: 'Almost done! Request is already in block.',
                 });
               }
               if (!isCompleted && status.isFinalized && method === 'Claim') {
@@ -97,7 +99,7 @@ export const claimBalance: (
                   inProgress: false,
                   completed: true,
                   resultStatus: 0,
-                  resultMessage: '',
+                  processMessage: '',
                 });
               }
             }
@@ -105,13 +107,19 @@ export const claimBalance: (
         }
       )
       .catch(e => {
-        console.log('error - ', e);
+        console.log('error - ', e.message);
+
+        const errorMessage = e.message ? e.message.split('Custom error: ') : [];
+        const errorResultMessage = errorMessage[1]
+          ? nodeErrorMessages[+errorMessage[1].trim()]
+          : '';
         if (isCompleted) return;
         isCompleted = true;
         statusCl({
           inProgress: false,
           completed: true,
           resultStatus: 1,
+          resultMessage: errorResultMessage,
         });
       });
 

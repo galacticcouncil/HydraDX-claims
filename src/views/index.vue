@@ -80,11 +80,7 @@ import {
 } from '@/services/polkadotUtils';
 import { isValueZero } from '@/services/utils';
 import type { ClaimProcessStatus } from '@/types';
-import {
-  addPolkadotExtListener,
-  initPolkadotExtension,
-} from '@/services/polkadotExtension';
-import { isWeb3Injected } from '@polkadot/extension-dapp';
+import { initPolkadotExtension } from '@/services/polkadotExtension';
 
 interface WizardState {
   wizardStep: number;
@@ -129,7 +125,7 @@ export default defineComponent({
 
     const wizardState = reactive({
       wizardStep: 1,
-      stepValidationStatus: [false, false, true, false],
+      stepValidationStatus: [true, false, true, false],
       web3Inst: getWeb3Instance(),
       loading: true,
       installPdExtClicked: false,
@@ -138,6 +134,7 @@ export default defineComponent({
         completed: false,
         resultStatus: 0,
         resultMessage: '',
+        processMessage: '',
       },
       globalNotice: {
         open: false,
@@ -173,8 +170,8 @@ export default defineComponent({
       newVal => {
         const isValZero = isValueZero(newVal);
         ethAccountData.isXhdxTotalBalanceZero = isValZero;
-        wizardState.stepValidationStatus[0] =
-          !isValZero && !ethAccountData.isClaimableHdxAmountZero;
+        // wizardState.stepValidationStatus[0] =
+        //   !isValZero && !ethAccountData.isClaimableHdxAmountZero;
       }
     );
     watch(
@@ -186,13 +183,13 @@ export default defineComponent({
         wizardState.stepValidationStatus[1] = !!newVal;
       }
     );
-    watch(
-      () => ethAccountData.isClaimableHdxAmountZero,
-      newVal => {
-        wizardState.stepValidationStatus[0] =
-          !newVal && !ethAccountData.isXhdxTotalBalanceZero;
-      }
-    );
+    // watch(
+    //   () => ethAccountData.isClaimableHdxAmountZero,
+    //   newVal => {
+    //     wizardState.stepValidationStatus[0] =
+    //       !newVal && !ethAccountData.isXhdxTotalBalanceZero;
+    //   }
+    // );
 
     watch(
       () => wizardState.claiming,
@@ -250,6 +247,7 @@ export default defineComponent({
       wizardState.claiming = {
         ...status,
         resultMessage: status.resultMessage || '',
+        processMessage: status.processMessage || '',
       };
     };
 
@@ -291,30 +289,12 @@ export default defineComponent({
     const onConnectPolkadotExt = async () => {
       let allInjected = await initPolkadotExtension(
         extInstance => {
-          console.log('initPolkadotExtension - +++');
-          // if (extInstance) {
-          //   step2State.isPDExtensionApproveWaiting = false;
-          //   step2State.isPDExtensionApproved = true;
-          // } else {
-          //   step2State.isPDExtensionApproveWaiting = false;
-          //   step2State.isPDExtensionApproved = false;
-          //   return;
-          //   //TODO add reject notice
-          // }
+          console.log('Polkadot.js extension has been connected!');
         },
         e => {
-          // if (e && e.message === 'no_extension') {
-          //   step2State.showInstallPolkadotExt = true;
-          // }
-          //
-          // step2State.isPDExtensionApproveWaiting = false;
-          // step2State.isPDExtensionApproved = false;
-          // //TODO add reject notice
-          // return;
+          console.log('Polkadot.js extension has not been connected!');
         }
       );
-
-      console.log('allInjected - ', allInjected);
 
       if (allInjected) hdxAccountData.isPolkadotExtAvailable = true;
     };
@@ -335,14 +315,11 @@ export default defineComponent({
       await initPolkadotApiInstanceWrapper();
 
       document.addEventListener('visibilitychange', function () {
-        if (document.hidden) {
-          console.log('Browser tab is hidden');
-        } else {
+        if (!document.hidden) {
           if (wizardState.installPdExtClicked) {
             wizardState.installPdExtClicked = false;
             window.location.reload();
           }
-          console.log('Browser tab is visible');
         }
       });
     });

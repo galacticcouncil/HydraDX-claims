@@ -1,6 +1,9 @@
 <template>
   <div class="wizard-step-container step-4">
-    <div v-if="wizardState.claiming.resultStatus === 0" class="status-message-container success">
+    <div
+      v-if="wizardState.claiming.resultStatus === 0"
+      class="status-message-container success"
+    >
       <div class="status-icon">
         <img :src="checkedIconSrc" alt="Success" />
       </div>
@@ -11,14 +14,20 @@
       </p>
     </div>
 
-    <div v-if="wizardState.claiming.resultStatus === 1" class="status-message-container error">
+    <div
+      v-if="wizardState.claiming.resultStatus === 1"
+      class="status-message-container error"
+    >
       <div class="status-icon">
         <img :src="errorIconSrc" alt="Error" />
       </div>
       <h3>ERROR!</h3>
-      <p class="success-message">
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry.
+      <p v-show="!wizardState.claiming.resultMessage" class="success-message">
+        <!--        TODO text must be updated-->
+        Some error has been occurred. Please, try again later.
+      </p>
+      <p v-show="wizardState.claiming.resultMessage" class="success-message">
+        {{ wizardState.claiming.resultMessage }}
       </p>
     </div>
   </div>
