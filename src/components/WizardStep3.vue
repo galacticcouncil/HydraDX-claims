@@ -155,8 +155,6 @@ export default defineComponent({
           step3State.messageValue,
           newVal
         );
-
-        console.log('isSignatureValid - ', step3State.isSignatureValid);
       }
     );
 

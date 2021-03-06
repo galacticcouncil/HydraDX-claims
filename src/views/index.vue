@@ -17,6 +17,7 @@
             :hdx-account-data="hdxAccountData"
             :on-reconnect-click="onReconnectClick"
             :on-connect-polkadot-ext="onConnectPolkadotExt"
+            :on-install-pd-ext-click="onInstallPdExtClick"
           />
           <WizardStep1
             v-if="wizardState.wizardStep === 1"
@@ -92,6 +93,7 @@ interface WizardState {
   loading: boolean;
   claiming: ClaimProcessStatus;
   isReconnectBtn: boolean;
+  installPdExtClicked: boolean;
   globalNotice: {
     open: boolean;
     message: string;
@@ -130,6 +132,7 @@ export default defineComponent({
       stepValidationStatus: [false, false, true, false],
       web3Inst: getWeb3Instance(),
       loading: true,
+      installPdExtClicked: false,
       claiming: {
         inProgress: false,
         completed: false,
@@ -316,6 +319,10 @@ export default defineComponent({
       if (allInjected) hdxAccountData.isPolkadotExtAvailable = true;
     };
 
+    const onInstallPdExtClick = () => {
+      wizardState.installPdExtClicked = true;
+    };
+
     onMounted(async () => {
       if (
         // @ts-ignore
@@ -331,6 +338,10 @@ export default defineComponent({
         if (document.hidden) {
           console.log('Browser tab is hidden');
         } else {
+          if (wizardState.installPdExtClicked) {
+            wizardState.installPdExtClicked = false;
+            window.location.reload();
+          }
           console.log('Browser tab is visible');
         }
       });
@@ -349,6 +360,7 @@ export default defineComponent({
       onConnectPolkadotExt,
       goToStep,
       setGlobalNotice,
+      onInstallPdExtClick,
     };
   },
 });

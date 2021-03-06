@@ -86,6 +86,7 @@
       class="hdx-btn loading-cover-btn"
       target="_blank"
       href="https://polkadot.js.org/extension/"
+      @click="onInstallPdExtClick"
       >Install Polkadot.js</a
     >
   </div>
@@ -118,6 +119,10 @@ export default defineComponent({
       default: () => {},
     },
     onConnectPolkadotExt: {
+      type: Function,
+      default: () => {},
+    },
+    onInstallPdExtClick: {
       type: Function,
       default: () => {},
     },
