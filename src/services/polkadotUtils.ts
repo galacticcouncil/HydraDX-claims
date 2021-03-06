@@ -1,5 +1,4 @@
 import { ApiPromise, Keyring } from '@polkadot/api';
-import BigNumber from 'bignumber.js';
 import { web3FromAddress } from '@polkadot/extension-dapp';
 import { u8aToHex } from '@polkadot/util';
 import { Signer } from '@polkadot/api/types';
@@ -62,48 +61,33 @@ export const claimBalance: (
         account,
         { signer: signer },
         ({ events, status }: ISubmittableResult) => {
-          console.log('-----------------------');
-          console.log('events - ', events);
-          console.log('statu - ', status);
-          console.log('status.toHuman - ', status.toHuman());
-          console.log(
-            `--- status.isInBlock - ${status.isInBlock} || status.isFinalized - ${status.isFinalized}--- `
-          );
-
-          events.forEach(
-            ({ phase, event: { data, method, section } }: EventRecord) => {
-              const [error, info] = data;
-              console.log('error - ', error);
-              console.log('info - ', info);
-              console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
-
-              if (!isCompleted && method === 'ExtrinsicFailed') {
-                isCompleted = true;
-                statusCl({
-                  inProgress: false,
-                  completed: true,
-                  resultStatus: 1,
-                });
-              }
-              if (!isCompleted && status.isInBlock && method === 'Claim') {
-                statusCl({
-                  inProgress: true,
-                  completed: false,
-                  resultStatus: 0,
-                  processMessage: 'Almost done! Request is already in block.',
-                });
-              }
-              if (!isCompleted && status.isFinalized && method === 'Claim') {
-                isCompleted = true;
-                statusCl({
-                  inProgress: false,
-                  completed: true,
-                  resultStatus: 0,
-                  processMessage: '',
-                });
-              }
+          events.forEach(({ phase, event: { data, method } }: EventRecord) => {
+            if (!isCompleted && method === 'ExtrinsicFailed') {
+              isCompleted = true;
+              statusCl({
+                inProgress: false,
+                completed: true,
+                resultStatus: 1,
+              });
             }
-          );
+            if (!isCompleted && status.isInBlock && method === 'Claim') {
+              statusCl({
+                inProgress: true,
+                completed: false,
+                resultStatus: 0,
+                processMessage: 'Almost done! Request is already in block.',
+              });
+            }
+            if (!isCompleted && status.isFinalized && method === 'Claim') {
+              isCompleted = true;
+              statusCl({
+                inProgress: false,
+                completed: true,
+                resultStatus: 0,
+                processMessage: '',
+              });
+            }
+          });
         }
       )
       .catch(e => {
@@ -122,10 +106,6 @@ export const claimBalance: (
           resultMessage: errorResultMessage,
         });
       });
-
-    console.log('claimResponse - ', claimResponse);
-
-    // return '0';
   } catch (e) {
     console.log(e);
     if (isCompleted) return;
@@ -139,33 +119,4 @@ export const claimBalance: (
 
 export const accountToHex: (address: string) => string = address => {
   return u8aToHex(keyring.decodeAddress(address));
-};
-
-// TODO should be removed as legacy functions
-
-export const getPolkadotIdentityBalanceByAddress: (
-  address: string
-) => Promise<number> = async address => {
-  try {
-    const multiTokenInfo = await polkadotApiInstance.query.tokens.accounts.entries(
-      address
-    );
-    const baseTokenInfo = await polkadotApiInstance.query.system.account(
-      address
-    );
-
-    const baseTokenBalance = new BigNumber(baseTokenInfo.data.free.toString());
-
-    const assetIds = await polkadotApiInstance.query.assetRegistry.assetIds.entries();
-
-    console.log('assetIds - ', assetIds);
-    console.log('multiTokenInfo - ', multiTokenInfo);
-    // console.log('baseTokenInfo - ', baseTokenInfo);
-    console.log('baseTokenBalance.toString() - ', baseTokenBalance.toString());
-
-    return 0;
-  } catch (e) {
-    console.log(e);
-    return -1;
-  }
 };

@@ -108,7 +108,6 @@ interface EthAccountData {
 interface HdxAccountData {
   isPolkadotExtAvailable: boolean;
   connectedAccount: InjectedAccountWithMeta | null;
-  hdxBalance: string;
 }
 
 export default defineComponent({
@@ -125,7 +124,7 @@ export default defineComponent({
 
     const wizardState = reactive({
       wizardStep: 1,
-      stepValidationStatus: [true, false, true, false],
+      stepValidationStatus: [false, false, true, false],
       web3Inst: getWeb3Instance(),
       loading: true,
       installPdExtClicked: false,
@@ -162,7 +161,6 @@ export default defineComponent({
       isPolkadotExtAvailable: false,
       currentExtAccountsList: [],
       connectedAccount: null,
-      hdxBalance: '0',
     } as HdxAccountData);
 
     watch(
@@ -170,31 +168,28 @@ export default defineComponent({
       newVal => {
         const isValZero = isValueZero(newVal);
         ethAccountData.isXhdxTotalBalanceZero = isValZero;
-        // wizardState.stepValidationStatus[0] =
-        //   !isValZero && !ethAccountData.isClaimableHdxAmountZero;
+        wizardState.stepValidationStatus[0] =
+          !isValZero && !ethAccountData.isClaimableHdxAmountZero;
       }
     );
     watch(
       () => hdxAccountData.connectedAccount,
       newVal => {
-        //TODO Don't delete!!! For debug purpose!!!
-        // wizardState.stepValidationStatus[1] =
-        //   !!newVal && !ethAccountData.isClaimableHdxAmountZero;
-        wizardState.stepValidationStatus[1] = !!newVal;
+        wizardState.stepValidationStatus[1] =
+          !!newVal && !ethAccountData.isClaimableHdxAmountZero;
       }
     );
-    // watch(
-    //   () => ethAccountData.isClaimableHdxAmountZero,
-    //   newVal => {
-    //     wizardState.stepValidationStatus[0] =
-    //       !newVal && !ethAccountData.isXhdxTotalBalanceZero;
-    //   }
-    // );
+    watch(
+      () => ethAccountData.isClaimableHdxAmountZero,
+      newVal => {
+        wizardState.stepValidationStatus[0] =
+          !newVal && !ethAccountData.isXhdxTotalBalanceZero;
+      }
+    );
 
     watch(
       () => wizardState.claiming,
       (newVal, oldVal) => {
-        console.log('new val - ', newVal);
         if (
           !newVal.inProgress &&
           newVal.completed &&
@@ -231,11 +226,7 @@ export default defineComponent({
         ethAccountData.claimableHdxAmount
       );
     };
-    const onConnectHdxAccount = async (
-      account: InjectedAccountWithMeta,
-      hdxBalance: string
-    ) => {
-      hdxAccountData.hdxBalance = hdxBalance;
+    const onConnectHdxAccount = async (account: InjectedAccountWithMeta) => {
       hdxAccountData.connectedAccount = account;
     };
 
@@ -265,22 +256,18 @@ export default defineComponent({
     const initPolkadotApiInstanceWrapper = async () => {
       await initPolkadotApiInstance({
         connected: () => {
-          console.log('pd api connected');
           wizardState.loading = false;
           wizardState.isReconnectBtn = false;
         },
         error: () => {
-          console.log('pd api error');
           wizardState.loading = true;
           wizardState.isReconnectBtn = true;
         },
         ready: () => {
-          console.log('pd api error');
           wizardState.loading = false;
           wizardState.isReconnectBtn = false;
         },
         disconnected: () => {
-          console.log('pd api error');
           wizardState.loading = true;
         },
       });
@@ -292,7 +279,7 @@ export default defineComponent({
           console.log('Polkadot.js extension has been connected!');
         },
         e => {
-          console.log('Polkadot.js extension has not been connected!');
+          console.log('Polkadot.js extension has not been connected! - ', e);
         }
       );
 

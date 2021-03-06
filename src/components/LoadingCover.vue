@@ -49,19 +49,6 @@
       class="hdx-btn loading-cover-btn reconnect-btn"
       >Reconnect</a
     >
-    <!--    <a-->
-    <!--      v-show="-->
-    <!--        !wizardState.isReconnectBtn &&-->
-    <!--        !wizardState.loading &&-->
-    <!--        !wizardState.claiming.inProgress &&-->
-    <!--        !hdxAccountData.isPolkadotExtAvailable-->
-    <!--      "-->
-    <!--      href="#"-->
-    <!--      @click.prevent="onReconnectClick"-->
-    <!--      class="hdx-btn loading-cover-btn reconnect-btn"-->
-    <!--      >Connect Polkadot.js</a-->
-    <!--    >-->
-
     <a
       v-if="
         !wizardState.isReconnectBtn &&
@@ -160,9 +147,7 @@ export default defineComponent({
           //@ts-ignore
           !!(window.injectedWeb3 && window.injectedWeb3['polkadot-js']);
 
-        console.log('isInjectedWeb3 - ', isInjectedWeb3);
         if (isInjectedWeb3) {
-          console.log(1);
           loadingCoverState.isInjectedWeb3 = isInjectedWeb3;
           clearInterval(checkPolkadotExt);
         }

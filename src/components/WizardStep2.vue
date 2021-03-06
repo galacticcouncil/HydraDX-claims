@@ -82,21 +82,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive, onMounted } from 'vue';
+import { defineComponent, reactive } from 'vue';
+import { getHydraDxFormattedAddress } from '@/services/utils';
 import {
-  getFormattedBalance,
-  getHydraDxFormattedAddress,
-} from '@/services/utils';
-import {
-  getPolkadotIdentityBalanceByAddress,
-  getClaimableHdxAmountByAddress,
-} from '@/services/polkadotUtils';
-import {
-  initPolkadotExtension,
   getHydraDxAccountsFromExtension,
   addPolkadotExtListener,
 } from '@/services/polkadotExtension';
-import { isWeb3Injected } from '@polkadot/extension-dapp';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import XhdxBalanceDetails from '@/components/XhdxBalanceDetails.vue';
 import HdxBalanceDetails from '@/components/HdxBalanceDetails.vue';
@@ -167,42 +158,12 @@ export default defineComponent({
     } as Step2State);
 
     const onConnectPolkadotExtClick = async () => {
-      // let allInjected = await initPolkadotExtension(
-      //   extInstance => {
-      //     console.log('initPolkadotExtension - +++');
-      //     if (extInstance) {
-      //       step2State.isPDExtensionApproveWaiting = false;
-      //       step2State.isPDExtensionApproved = true;
-      //     } else {
-      //       step2State.isPDExtensionApproveWaiting = false;
-      //       step2State.isPDExtensionApproved = false;
-      //       return;
-      //       //TODO add reject notice
-      //     }
-      //   },
-      //   e => {
-      //     if (e && e.message === 'no_extension') {
-      //       step2State.showInstallPolkadotExt = true;
-      //     }
-      //
-      //     step2State.isPDExtensionApproveWaiting = false;
-      //     step2State.isPDExtensionApproved = false;
-      //     //TODO add reject notice
-      //     return;
-      //   }
-      // );
-      //
-      // console.log('isWeb3Injected - ', isWeb3Injected);
-
       if (!props.hdxAccountData.isPolkadotExtAvailable) return;
 
       const allAccounts = await getHydraDxAccountsFromExtension();
 
       addPolkadotExtListener(async accounts => {
-        console.log('addPolkadotExtListener - ', accounts);
-
         if (step2State.currentExtAccountsList.length !== accounts.length) {
-          console.log(123);
           step2State.allAvailableAccounts = await getHydraDxAccountsFromExtension();
         }
         step2State.currentExtAccountsList = accounts;
@@ -220,20 +181,19 @@ export default defineComponent({
             );
           })
         ) {
+          // TODO Text should be updated
           props.setGlobalNotice(
             true,
             'Previously selected HydraDX account is not available anymore. Please, select another one.'
           );
           props.goToStep(2);
           step2State.selectedAccount = null;
-          props.onConnectHdxAccount(null, '0');
+          props.onConnectHdxAccount(null);
           setTimeout(() => {
             props.setGlobalNotice(false);
           }, 5000);
         }
       });
-
-      console.log('allAccounts - ', allAccounts);
 
       step2State.allAvailableAccounts = allAccounts;
       step2State.openAccountsList = true;
@@ -249,14 +209,7 @@ export default defineComponent({
 
     const connectPdAccount = async () => {
       if (!step2State.selectedAccount) return;
-
-      const balance = await getPolkadotIdentityBalanceByAddress(
-        step2State.selectedAccount.address
-      );
-
-      console.log('------ balance - ', balance);
-
-      props.onConnectHdxAccount(step2State.selectedAccount, '0');
+      props.onConnectHdxAccount(step2State.selectedAccount);
       step2State.openAccountsList = false;
     };
 

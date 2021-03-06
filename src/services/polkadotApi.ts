@@ -7,7 +7,7 @@ const local =
 
 const nodeAddress = local
   ? 'ws://127.0.0.1:9944'
-  : 'wss://rpc-01.snakenet.hydradx.io';
+  : 'wss://rpc-01.snakenet.hydradx.io'; // TODO Is it correct URL?
 
 let polkadotApiInstance: ApiPromise;
 
@@ -25,7 +25,6 @@ export const setApiConnection = (
    * If connection is not recovered, API listener "error" will be executed.
    */
   const recoverConnection = (error: Error) => {
-    console.log('recoverConnection');
     if (reconnectionsIndex < reconnectionsNumber) {
       setTimeout(() => {
         wsProvider.connect();
@@ -47,7 +46,6 @@ export const setApiConnection = (
   });
 
   wsProvider.on('connected', async () => {
-    console.log("wsProvider.on('connected'");
     if (polkadotApiInstance) {
       apiListeners.ready(polkadotApiInstance);
       return;
@@ -143,13 +141,11 @@ export const setApiConnection = (
       },
     })
       .on('error', e => {
-        console.log('ApiPromise - error ');
         if (!isDisconnection) {
           apiListeners.error(e);
         }
       })
       .on('connected', () => {
-        console.log('ApiPromise - connected ');
         apiListeners.connected();
         isDisconnection = false;
       })
@@ -158,7 +154,6 @@ export const setApiConnection = (
          * This event happens when connection has been lost and each time, when
          * connection attempt has been done with error.
          */
-        console.log('ApiPromise - disconnected ');
         if (!isDisconnection) {
           apiListeners.disconnected();
           isDisconnection = true;
@@ -166,18 +161,15 @@ export const setApiConnection = (
         }
       })
       .on('ready', apiInstance => {
-        console.log('ApiPromise - ready ');
         polkadotApiInstance = apiInstance;
         apiListeners.ready(apiInstance);
       })
       .isReadyOrError.then(apiResponse => {
-        console.log('isReadyOrError - catch ');
         polkadotApiInstance = apiResponse;
         apiListeners.connected();
         resolvePromise(apiResponse);
       })
       .catch(e => {
-        console.log('isReadyOrError - error ');
         apiListeners.error(e);
       });
   });

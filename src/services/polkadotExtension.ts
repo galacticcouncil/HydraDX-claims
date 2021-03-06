@@ -10,7 +10,7 @@ import {
   web3AccountsSubscribe,
 } from '@polkadot/extension-dapp';
 import { ApiPromise } from '@polkadot/api';
-import { reactive, unref } from 'vue';
+import { reactive } from 'vue';
 import { getPolkadotApiInstance } from '@/services/polkadotUtils';
 import { getSpecTypes } from '@polkadot/types-known';
 
@@ -207,8 +207,6 @@ export const initPolkadotExtension: (
           api.runtimeVersion.specVersion
         ),
       };
-
-      console.log('testInfo ---- ', chainInfo);
 
       try {
         //@ts-ignore

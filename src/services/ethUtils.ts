@@ -1,9 +1,8 @@
-import axios from 'axios';
 import ethAbi from '@/services/ethAbi';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
-import { JsonRpcPayload, JsonRpcResponse } from 'web3-core-helpers';
+import { JsonRpcPayload } from 'web3-core-helpers';
 
 import {
   fromRpcSig,
@@ -14,7 +13,7 @@ import {
   keccak,
 } from 'ethereumjs-util';
 
-const contractAddress = '0x6FCb6408499a7c0f242E32D77EB51fFa1dD28a7E';
+const contractAddress = '0x6FCb6408499a7c0f242E32D77EB51fFa1dD28a7E'; // TODO Is it correct address
 let web3Inst: Web3;
 let tokenContract: Contract;
 
@@ -100,7 +99,7 @@ export const signMessageWithMetaMask: (
   const signPayload: JsonRpcPayload = {
     params: [message, address],
     method: 'personal_sign',
-    jsonrpc: '2',
+    jsonrpc: '2', // TODO which version must be here?
   };
 
   let response;
@@ -118,18 +117,6 @@ export const signMessageWithMetaMask: (
   }
 
   return response.result !== undefined ? response.result : '';
-
-  //https://github.com/danfinlay/js-eth-personal-sign-examples/blob/master/index.js
-  // sign example online - https://app.mycrypto.com/sign-message
-  //error
-  // code: 4001
-  // message: "MetaMask Message Signature: User denied message signature."
-  // stack: "{↵  "code": 4001,↵  "message": "M
-
-  // success
-  // id: undefined
-  // jsonrpc: "2"
-  // result: "0xb2bc7ba434aca4a5130e880
 };
 
 export const validateMessageSignature: (

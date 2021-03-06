@@ -9,6 +9,7 @@
       </div>
       <h3>SUCCESS!</h3>
       <p class="success-message">
+        <!--        TODO text must be updated-->
         Lorem Ipsum is simply dummy text of the printing and typesetting
         industry.
       </p>

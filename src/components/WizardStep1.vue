@@ -77,10 +77,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, reactive } from 'vue';
-import { getFormattedBalance } from '@/services/utils';
+import { defineComponent, watch, reactive } from 'vue';
 import { isEhtAddressClaimable } from '@/services/ethUtils';
-import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import XhdxBalanceDetails from '@/components/XhdxBalanceDetails.vue';
 import HdxBalanceDetails from '@/components/HdxBalanceDetails.vue';
 
@@ -153,7 +151,6 @@ export default defineComponent({
       } catch (e) {
         console.log(e);
         step1State.notClaimableAddress = false;
-        //TODO add error handler
       }
     };
 
@@ -166,7 +163,6 @@ export default defineComponent({
         step1State.notClaimableAddress = false;
         props.onConnectEthAccount(step1State.manuallyEnteredAccount);
       } else {
-        //TODO add error handler
         step1State.notClaimableAddress = false;
       }
     };
