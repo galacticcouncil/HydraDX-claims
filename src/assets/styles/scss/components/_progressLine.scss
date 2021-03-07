@@ -1,0 +1,103 @@
+.hdx-progress-line {
+  height: 20px;
+  margin-bottom: 0.7em;
+  width: 120%;
+  margin-left: -10%;
+
+  .step-point {
+    flex: 1;
+    position: relative;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 0;
+      right: 0;
+      top: 0;
+      background-image: url('~@/assets/images/eye-blue.png');
+      background-size: contain;
+      margin-left: auto;
+      margin-right: auto;
+      z-index: 3;
+    }
+
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background-color: $hdx-blue;
+      left: 50%;
+      top: 9px;
+      z-index: 2;
+    }
+
+    &:last-of-type {
+      &:after {
+        content: none;
+      }
+    }
+  }
+
+  .progress-line-inner-container {
+    display: flex;
+    align-items: center;
+
+    &.current-step-1 {
+      .step-1 {
+        &:before {
+          background-image: url('~@/assets/images/eye-pink.png');
+        }
+      }
+    }
+    &.current-step-2 {
+      .step-1,
+      .step-2 {
+        &:before {
+          background-image: url('~@/assets/images/eye-pink.png');
+        }
+      }
+      .step-1 {
+        &:after {
+          background-color: $hdx-pink;
+        }
+      }
+    }
+    &.current-step-3 {
+      .step-1,
+      .step-2,
+      .step-3 {
+        &:before {
+          background-image: url('~@/assets/images/eye-pink.png');
+        }
+      }
+      .step-1,
+      .step-2 {
+        &:after {
+          background-color: $hdx-pink;
+        }
+      }
+    }
+    &.current-step-4 {
+      .step-1,
+      .step-2,
+      .step-3,
+      .step-4 {
+        &:before {
+          background-image: url('~@/assets/images/eye-pink.png');
+        }
+      }
+      .step-1,
+      .step-2,
+      .step-3 {
+        &:after {
+          background-color: $hdx-pink;
+        }
+      }
+    }
+  }
+}

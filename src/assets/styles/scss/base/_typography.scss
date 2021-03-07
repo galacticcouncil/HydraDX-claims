@@ -1,0 +1,59 @@
+@font-face {
+  font-family: 'Pexico-Regular';
+  src: url('../../font/Pexico-Regular/font.woff2') format('woff2');
+}
+
+#app {
+  font-family: Pexico-Regular, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: $hdx-light-blue;
+}
+
+html,
+body {
+  color: $hdx-light-blue;
+
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: $hdx-bgr-blue;
+  color: $hdx-pink;
+}
+::-moz-selection {
+  background: $hdx-bgr-blue;
+  color: $hdx-pink;
+}
+
+a {
+  text-transform: none;
+  transition: $hdx-global-transition;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    text-transform: none;
+    text-decoration: none;
+    transition: $hdx-global-transition;
+  }
+}
+
+a,
+:visited {
+  color: $hdx-light-blue;
+}
+
+button {
+  outline: none;
+  background: transparent;
+  text-decoration: underline;
+}
+
+button,
+input {
+  font-family: Pexico-Regular, sans-serif;
+}

@@ -1,0 +1,27 @@
+.xhdx-amounts-indicator {
+  border: 2px solid $hdx-light-blue;
+  margin-top: 2em;
+  margin-bottom: 1.5em;
+
+  .amount-details {
+    display: flex;
+    flex-direction: row;
+  }
+  .amount-details-item {
+    flex: 1;
+
+    padding: 0.5em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &:first-of-type {
+      border-right: 2px solid $hdx-light-blue;
+    }
+  }
+}
+
+.hdx-amount-indicator {
+  margin-top: 1em;
+}
