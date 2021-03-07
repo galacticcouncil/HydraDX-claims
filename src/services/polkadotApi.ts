@@ -7,7 +7,7 @@ const local =
 
 const nodeAddress = local
   ? 'ws://127.0.0.1:9944'
-  : 'wss://rpc-01.snakenet.hydradx.io';
+  : 'wss://rpc-02.snakenet.hydradx.io';
 
 let polkadotApiInstance: ApiPromise;
 

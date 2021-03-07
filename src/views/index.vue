@@ -3,8 +3,8 @@
     <div class="hdx-claim-inner-container">
       <header class="main-header">
         <a href="/">
-          <img src="@/assets/images/eye-logo.png" alt="claim.hydra.dx" />
-          <h1>claim.hydra.dx</h1>
+          <img src="@/assets/images/eye-logo.png" alt="claim.hydradx.io" />
+          <h1>claim.hydradx.io</h1>
           <a class="help" href="https://docs.hydradx.io/claim/">HELP?</a>
         </a>
       </header>
