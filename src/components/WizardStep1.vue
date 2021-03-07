@@ -47,10 +47,6 @@
       v-if="ethAccountData.connectedAccount.length !== 0"
       :eth-account-data="ethAccountData"
     />
-    <!--    <div v-if="ethAccountData.connectedAccount.length !== 0" class="text-label">-->
-    <!--      HDX to Claim: {{ hdxClaimableAmountFormatted }} HDX-->
-    <!--    </div>-->
-
     <a
       v-if="
         step1State.manuallyEnteredAccount.length > 0 &&

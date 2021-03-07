@@ -20,18 +20,19 @@
       </div>
       <h3>ERROR!</h3>
       <p v-show="!wizardState.claiming.resultMessage" class="success-message">
-        <!--        TODO text must be updated-->
-        Some error has been occurred. Please, try again later.
+        Error. Please contact support.
       </p>
       <p v-show="wizardState.claiming.resultMessage" class="success-message">
         {{ wizardState.claiming.resultMessage }}
       </p>
+      <p v-show="currentBlockNumber">Block number: #{{ currentBlockNumber }}</p>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
+import { getCurrentBlockNumber } from '@/services/polkadotUtils';
 
 export default defineComponent({
   name: 'WizardStep4',
@@ -44,10 +45,19 @@ export default defineComponent({
     },
   },
 
-  setup() {
+  setup(props) {
+    const currentBlockNumber = ref('');
+
+    onMounted(async () => {
+      if (props.wizardState.claiming.resultStatus === 0) return;
+      const rawBlockNumber = await getCurrentBlockNumber();
+      if (!rawBlockNumber) return;
+      currentBlockNumber.value = rawBlockNumber.toHuman();
+    });
     return {
       checkedIconSrc: require('@/assets/images/blue-logo.svg'),
       errorIconSrc: require('@/assets/images/pink-logo.svg'),
+      currentBlockNumber,
     };
   },
 });

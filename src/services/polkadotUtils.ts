@@ -1,4 +1,6 @@
 import { ApiPromise, Keyring } from '@polkadot/api';
+import type { BlockNumber } from '@polkadot/types/interfaces';
+
 import { web3FromAddress } from '@polkadot/extension-dapp';
 import { u8aToHex } from '@polkadot/util';
 import { Signer } from '@polkadot/api/types';
@@ -119,4 +121,9 @@ export const claimBalance: (
 
 export const accountToHex: (address: string) => string = address => {
   return u8aToHex(keyring.decodeAddress(address));
+};
+
+export const getCurrentBlockNumber: () => Promise<BlockNumber | null> = async () => {
+  if (!polkadotApiInstance) return null;
+  return await polkadotApiInstance.query.system.number();
 };
