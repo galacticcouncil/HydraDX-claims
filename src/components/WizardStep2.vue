@@ -43,7 +43,7 @@
     v-show="step2State.openAccountsList && !hdxAccountData.connectedAccount"
     class="wizard-step-container polkadot-accounts-select"
   >
-    <div class="list-title">Accounts:</div>
+    <div class="list-title">Accounts</div>
     <div class="accounts-list-container">
       <div
         v-for="(account, index) in step2State.allAvailableAccounts"

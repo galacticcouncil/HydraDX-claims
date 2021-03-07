@@ -77,7 +77,7 @@ export const getXhdxAmountByAddress: (
   }
 };
 
-export const isEhtAddressClaimable: (
+export const isEthAddressClaimable: (
   address: string
 ) => Promise<boolean> = async address => {
   if (address.indexOf('0x') !== 0) return false;

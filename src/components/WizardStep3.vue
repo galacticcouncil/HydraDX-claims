@@ -13,7 +13,9 @@
       class="hdx-input response-input"
       placeholder="Response..."
       v-model="step3State.responseValue"
-      :disabled="step3State.isResponseInputDisabled"
+      :disabled="
+        step3State.isResponseInputDisabled || ethAccountData.isMetamaskAvailable
+      "
     />
     <a
       v-show="
@@ -162,9 +164,6 @@ export default defineComponent({
       step3State.responseValue = await signMessageWithMetaMask(
         props.ethAccountData.connectedAccount,
         step3State.messageValue
-      );
-      step3State.isResponseInputDisabled = !!(
-        step3State.responseValue && step3State.responseValue.length > 0
       );
     };
     const onClaimClick = async () => {

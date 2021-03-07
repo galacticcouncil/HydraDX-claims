@@ -78,7 +78,7 @@
 
 <script lang="ts">
 import { defineComponent, watch, reactive } from 'vue';
-import { isEhtAddressClaimable } from '@/services/ethUtils';
+import { isEthAddressClaimable } from '@/services/ethUtils';
 import XhdxBalanceDetails from '@/components/XhdxBalanceDetails.vue';
 import HdxBalanceDetails from '@/components/HdxBalanceDetails.vue';
 
@@ -142,7 +142,7 @@ export default defineComponent({
         const account = await window.ethereum.request({
           method: 'eth_requestAccounts',
         });
-        if (!(await isEhtAddressClaimable(account[0]))) {
+        if (!(await isEthAddressClaimable(account[0]))) {
           step1State.notClaimableAddress = account[0];
           return;
         }
@@ -156,7 +156,7 @@ export default defineComponent({
 
     const onConnectEthAccountClick = async () => {
       if (step1State.manuallyEnteredAccountValid) {
-        if (!(await isEhtAddressClaimable(step1State.manuallyEnteredAccount))) {
+        if (!(await isEthAddressClaimable(step1State.manuallyEnteredAccount))) {
           step1State.notClaimableAddress = step1State.manuallyEnteredAccount;
           return;
         }

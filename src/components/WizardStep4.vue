@@ -8,11 +8,8 @@
         <img :src="checkedIconSrc" alt="Success" />
       </div>
       <h3>SUCCESS!</h3>
-      <p class="success-message">
-        <!--        TODO text must be updated-->
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry.
-      </p>
+      <span class="success-message">Welcome to HydraDX</span>
+      <span>{{}}</span>
     </div>
 
     <div
@@ -50,8 +47,8 @@ export default defineComponent({
 
   setup() {
     return {
-      checkedIconSrc: require('@/assets/images/pixelated.svg'),
-      errorIconSrc: require('@/assets/images/alien-pixelated-shape-of-a-digital-game.svg'),
+      checkedIconSrc: require('@/assets/images/blue-logo.svg'),
+      errorIconSrc: require('@/assets/images/pink-logo.svg'),
     };
   },
 });
