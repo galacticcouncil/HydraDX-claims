@@ -5,6 +5,7 @@
         <a href="/">
           <img src="@/assets/images/eye-logo.png" alt="claim.hydra.dx" />
           <h1>claim.hydra.dx</h1>
+          <a class="help" href="https://docs.hydradx.io/claim/">HELP?</a>
         </a>
       </header>
       <div class="content-container">
