@@ -190,7 +190,7 @@ export const initPolkadotExtension: (
     if (filteredExts.count > 0) {
       const chainInfo = {
         chain: systemChain.toString(),
-        color: '#0044ff', // TODO must be changed
+        color: '#f653a2',
         genesisHash: extStore.genesisHash,
         icon: 'substrate',
         metaCalls: Buffer.from(
