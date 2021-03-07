@@ -217,7 +217,7 @@ export default defineComponent({
         account,
         'gasRefund'
       );
-      ethAccountData.connectedAccount = account;
+      ethAccountData.connectedAccount = account.trim().toLocaleLowerCase();
 
       ethAccountData.claimableHdxAmount = await getClaimableHdxAmountByAddress(
         account
