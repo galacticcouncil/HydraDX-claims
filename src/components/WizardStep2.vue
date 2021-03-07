@@ -89,7 +89,6 @@ import {
   addPolkadotExtListener,
 } from '@/services/polkadotExtension';
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
-import XhdxBalanceDetails from '@/components/XhdxBalanceDetails.vue';
 import HdxBalanceDetails from '@/components/HdxBalanceDetails.vue';
 
 type Step2State = {
@@ -104,7 +103,6 @@ type Step2State = {
 export default defineComponent({
   name: 'WizardStep2',
   components: {
-    XhdxBalanceDetails,
     HdxBalanceDetails,
   },
   props: {

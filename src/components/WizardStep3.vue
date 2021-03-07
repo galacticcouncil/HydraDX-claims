@@ -57,7 +57,6 @@ import {
 } from '@/services/ethUtils';
 import { claimBalance, accountToHex } from '@/services/polkadotUtils';
 import { getHydraDxFormattedAddress } from '@/services/utils';
-import type { ClaimProcessStatus } from '@/types';
 
 interface Step3State {
   messageValue: string;
@@ -95,7 +94,7 @@ export default defineComponent({
       default: () => {},
     },
     setClaimProcessStatus: {
-      type: Function as PropType<(status: ClaimProcessStatus) => void>,
+      type: Function as PropType<() => void>,
       default: () => {},
     },
     isNextStepValid: {

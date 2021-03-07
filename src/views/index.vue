@@ -275,7 +275,7 @@ export default defineComponent({
 
     const onConnectPolkadotExt = async () => {
       let allInjected = await initPolkadotExtension(
-        extInstance => {
+        () => {
           console.log('Polkadot.js extension has been connected!');
         },
         e => {
