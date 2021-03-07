@@ -179,7 +179,6 @@ export default defineComponent({
             );
           })
         ) {
-          // TODO Text should be updated
           props.setGlobalNotice(
             true,
             'Previously selected HydraDX account is not available anymore. Please, select another one.'

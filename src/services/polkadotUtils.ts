@@ -48,7 +48,6 @@ export const claimBalance: (
 ) => Promise<void> = async (sign, account, statusCl) => {
   const signer = await getSinger(account);
   let isCompleted = false;
-  //TODO text must be updated
   const nodeErrorMessages = ['Message signature is wrong', 'Nothing to claim'];
 
   try {

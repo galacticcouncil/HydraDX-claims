@@ -13,7 +13,7 @@ import {
   keccak,
 } from 'ethereumjs-util';
 
-const contractAddress = '0x6FCb6408499a7c0f242E32D77EB51fFa1dD28a7E'; // TODO Is it correct address
+const contractAddress = '0x6FCb6408499a7c0f242E32D77EB51fFa1dD28a7E';
 let web3Inst: Web3;
 let tokenContract: Contract;
 
@@ -99,7 +99,7 @@ export const signMessageWithMetaMask: (
   const signPayload: JsonRpcPayload = {
     params: [message, address],
     method: 'personal_sign',
-    jsonrpc: '2', // TODO which version must be here?
+    jsonrpc: '2',
   };
 
   let response;
