@@ -9,7 +9,6 @@
       </div>
       <h3>SUCCESS!</h3>
       <span class="success-message">Welcome to HydraDX</span>
-      <span>{{}}</span>
     </div>
 
     <div
