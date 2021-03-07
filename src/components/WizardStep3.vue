@@ -13,9 +13,7 @@
       class="hdx-input response-input"
       placeholder="Response..."
       v-model="step3State.responseValue"
-      :disabled="
-        step3State.isResponseInputDisabled || ethAccountData.isMetamaskAvailable
-      "
+      :disabled="step3State.isResponseInputDisabled"
     />
     <a
       v-show="
