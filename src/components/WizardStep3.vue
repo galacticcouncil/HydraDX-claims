@@ -162,6 +162,8 @@ export default defineComponent({
         props.ethAccountData.connectedAccount,
         step3State.messageValue
       );
+      if (step3State.responseValue && step3State.responseValue.length > 0)
+        step3State.isResponseInputDisabled = true;
     };
     const onClaimClick = async () => {
       await claimBalance(
