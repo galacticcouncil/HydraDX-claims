@@ -9,6 +9,10 @@
       </div>
       <h3>SUCCESS!</h3>
       <span class="success-message">Welcome to HydraDX</span>
+      <div v-show="+hdxNewBalance > 0" class="current-hdx-balance-message">
+        <p>Current HDX Balance:</p>
+        <p>{{ hdxNewBalance }}</p>
+      </div>
     </div>
 
     <div
@@ -32,7 +36,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import { getCurrentBlockNumber } from '@/services/polkadotUtils';
+import {
+  getCurrentBlockNumber,
+  getHydraDxIdentityBalanceByAddress,
+} from '@/services/polkadotUtils';
 
 export default defineComponent({
   name: 'WizardStep4',
@@ -43,21 +50,34 @@ export default defineComponent({
         return {};
       },
     },
+    hdxAccountData: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
   },
 
   setup(props) {
     const currentBlockNumber = ref('');
+    const hdxNewBalance = ref('0');
 
     onMounted(async () => {
-      if (props.wizardState.claiming.resultStatus === 0) return;
-      const rawBlockNumber = await getCurrentBlockNumber();
-      if (!rawBlockNumber) return;
-      currentBlockNumber.value = rawBlockNumber.toHuman();
+      if (props.wizardState.claiming.resultStatus === 0) {
+        hdxNewBalance.value = await getHydraDxIdentityBalanceByAddress(
+          props.hdxAccountData.connectedAccount.address
+        );
+      } else {
+        const rawBlockNumber = await getCurrentBlockNumber();
+        if (!rawBlockNumber) return;
+        currentBlockNumber.value = rawBlockNumber.toHuman();
+      }
     });
     return {
       checkedIconSrc: require('@/assets/images/blue-logo.svg'),
       errorIconSrc: require('@/assets/images/pink-logo.svg'),
       currentBlockNumber,
+      hdxNewBalance,
     };
   },
 });

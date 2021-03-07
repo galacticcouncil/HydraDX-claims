@@ -51,6 +51,7 @@
           <WizardStep4
             v-if="wizardState.wizardStep === 4"
             :wizard-state="wizardState"
+            :hdx-account-data="hdxAccountData"
           />
         </div>
       </div>

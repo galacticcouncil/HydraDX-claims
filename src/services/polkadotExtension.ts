@@ -173,7 +173,7 @@ export const initPolkadotExtension: (
   const api = getPolkadotApiInstance();
 
   try {
-    injectedExt = await web3Enable('CLAIM.HYDRA.DX');
+    injectedExt = await web3Enable('CLAIM.HYDRADX.IO');
 
     if (!injectedExt || injectedExt.length === 0) {
       throw Error('no_extension');

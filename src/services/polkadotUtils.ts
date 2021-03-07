@@ -1,5 +1,6 @@
 import { ApiPromise, Keyring } from '@polkadot/api';
 import type { BlockNumber } from '@polkadot/types/interfaces';
+import BigNumber from 'bignumber.js';
 
 import { web3FromAddress } from '@polkadot/extension-dapp';
 import { u8aToHex } from '@polkadot/util';
@@ -125,4 +126,23 @@ export const accountToHex: (address: string) => string = address => {
 export const getCurrentBlockNumber: () => Promise<BlockNumber | null> = async () => {
   if (!polkadotApiInstance) return null;
   return await polkadotApiInstance.query.system.number();
+};
+
+export const getHydraDxIdentityBalanceByAddress: (
+  address: string
+) => Promise<string> = async address => {
+  try {
+    const baseTokenInfo = await polkadotApiInstance.query.system.account(
+      address
+    );
+    if (!baseTokenInfo) return '0';
+
+    return new BigNumber(baseTokenInfo.data.free.toString())
+      .div(1000000000000)
+      .decimalPlaces(4)
+      .toString();
+  } catch (e) {
+    console.log(e);
+    return '0';
+  }
 };
