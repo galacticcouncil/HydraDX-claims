@@ -1,7 +1,15 @@
 <template>
   <div class="wizard-step-container step-3">
+    <div class="sign-message-help">
+      <a href="https://docs.hydradx.io/claim#03-sign" target="_blank"
+        >ADDRESS DOESN'T MATCH?
+      </a>
+    </div>
     <div class="sign-message-container">
-      <div class="copy-action-btn">
+      <div
+        v-show="ethAccountData.accountConnectionMethod === 'manual'"
+        class="copy-action-btn"
+      >
         <img v-show="!step3State.copied" :src="copyIconSrc" alt="Copy" />
         <img v-show="step3State.copied" :src="checkedIconSrc" alt="Copy" />
       </div>
