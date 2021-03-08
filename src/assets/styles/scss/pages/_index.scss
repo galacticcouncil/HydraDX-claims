@@ -146,6 +146,7 @@
 
       .empty-accounts-list-notice {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
@@ -205,9 +206,13 @@
       }
     }
 
+    .sign-message-help {
+      margin-top: 5px;
+    }
+
     .sign-message-container {
       position: relative;
-      margin-top: 2em;
+      margin-top: 1em;
 
       .copy-action-btn {
         position: absolute;

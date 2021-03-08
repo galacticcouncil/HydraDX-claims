@@ -100,6 +100,7 @@ interface WizardState {
 interface EthAccountData {
   isMetamaskAvailable: boolean;
   connectedAccount: string;
+  accountConnectionMethod: string;
   xhdxBoughtBalance: string;
   isXhdxTotalBalanceZero: boolean;
   xhdxTotalBalance: string;
@@ -147,6 +148,7 @@ export default defineComponent({
     const ethAccountData = reactive({
       isMetamaskAvailable: false,
       connectedAccount: '',
+      accountConnectionMethod: 'manual',
 
       isXhdxTotalBalanceZero: true,
       xhdxTotalBalance: '0',
@@ -206,7 +208,10 @@ export default defineComponent({
       return wizardState.stepValidationStatus[wizardState.wizardStep - 1];
     });
 
-    const onConnectEthAccount = async (account: string) => {
+    const onConnectEthAccount = async (
+      account: string,
+      method: string
+    ) => {
       ethAccountData.xhdxBoughtBalance = await getXhdxAmountByAddress(
         account,
         'bought'
@@ -220,6 +225,7 @@ export default defineComponent({
         'gasRefund'
       );
       ethAccountData.connectedAccount = account.trim().toLocaleLowerCase();
+      ethAccountData.accountConnectionMethod = method;
 
       ethAccountData.claimableHdxAmount = await getClaimableHdxAmountByAddress(
         account
