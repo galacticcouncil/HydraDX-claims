@@ -131,6 +131,10 @@ export default defineComponent({
         if (!isValid) step1State.notClaimableAddress = false;
       }
     );
+    const getEthAddressWithPrefix = (rawAddress: string) => {
+      if (rawAddress.indexOf('0x') === 0) return rawAddress;
+      return `0x${rawAddress}`;
+    };
 
     const onConnectMetamaskClick = async () => {
       try {
@@ -143,7 +147,7 @@ export default defineComponent({
           return;
         }
         step1State.notClaimableAddress = false;
-        props.onConnectEthAccount(account[0]);
+        props.onConnectEthAccount(account[0], 'metamask');
       } catch (e) {
         console.log(e);
         step1State.notClaimableAddress = false;
@@ -152,12 +156,19 @@ export default defineComponent({
 
     const onConnectEthAccountClick = async () => {
       if (step1State.manuallyEnteredAccountValid) {
-        if (!(await isEthAddressClaimable(step1State.manuallyEnteredAccount))) {
+        if (
+          !(await isEthAddressClaimable(
+            getEthAddressWithPrefix(step1State.manuallyEnteredAccount)
+          ))
+        ) {
           step1State.notClaimableAddress = step1State.manuallyEnteredAccount;
           return;
         }
         step1State.notClaimableAddress = false;
-        props.onConnectEthAccount(step1State.manuallyEnteredAccount);
+        props.onConnectEthAccount(
+          getEthAddressWithPrefix(step1State.manuallyEnteredAccount),
+          'manual'
+        );
       } else {
         step1State.notClaimableAddress = false;
       }

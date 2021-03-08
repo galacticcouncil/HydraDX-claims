@@ -146,6 +146,7 @@
 
       .empty-accounts-list-notice {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
@@ -203,6 +204,10 @@
       &.hydradx-account {
         margin-top: 20px;
       }
+    }
+
+    .sign-message-help {
+      margin-top: 5px;
     }
 
     .sign-message-container {

@@ -67,8 +67,17 @@
         v-if="step2State.allAvailableAccounts.length === 0"
         class="empty-accounts-list-notice"
       >
-        You don't have existing accounts for HydraDX network in your Polkadot.js
-        extension. Please, create new one or attach existing to extension.
+        <div>
+          You don't have existing accounts for HydraDX network in your
+          Polkadot.js extension. Please, create new one or attach existing to
+          extension.
+        </div>
+        <br />
+        <a
+          target="_blank"
+          href="https://docs.hydradx.io/claim/#02-create-hdx-address"
+          >HELP?</a
+        >
       </div>
     </div>
     <a
