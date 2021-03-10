@@ -126,6 +126,7 @@ export default defineComponent({
     watch(
       () => step1State.manuallyEnteredAccount,
       newVal => {
+        step1State.manuallyEnteredAccount = newVal.toLowerCase();
         const isValid = props.wizardState.web3Inst.utils.isAddress(newVal);
         step1State.manuallyEnteredAccountValid = isValid;
         if (!isValid) step1State.notClaimableAddress = false;
