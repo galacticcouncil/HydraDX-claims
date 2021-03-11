@@ -3,6 +3,7 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { JsonRpcPayload } from 'web3-core-helpers';
+import { getEthAddressWithPrefix } from '@/services/utils';
 
 import {
   fromRpcSig,
@@ -80,8 +81,9 @@ export const getXhdxAmountByAddress: (
 export const isEthAddressClaimable: (
   address: string
 ) => Promise<boolean> = async address => {
-  if (address.indexOf('0x') !== 0) return false;
-  const addressTrimmed = address.replace('0x', '');
+  const addressForCheck = getEthAddressWithPrefix(address.trim()).toLowerCase();
+
+  const addressTrimmed = addressForCheck.replace('0x', '');
 
   if (!addressTrimmed || addressTrimmed.length === 0) return false;
 
@@ -89,7 +91,7 @@ export const isEthAddressClaimable: (
 
   if (!addressesScope) return false;
 
-  return !!addressesScope[address.trim().toLowerCase()];
+  return !!addressesScope[addressForCheck];
 };
 
 export const signMessageWithMetaMask: (

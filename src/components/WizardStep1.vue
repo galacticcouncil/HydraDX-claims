@@ -75,6 +75,7 @@
 <script lang="ts">
 import { defineComponent, watch, reactive } from 'vue';
 import { isEthAddressClaimable } from '@/services/ethUtils';
+import { getEthAddressWithPrefix } from '@/services/utils';
 import XhdxBalanceDetails from '@/components/XhdxBalanceDetails.vue';
 import HdxBalanceDetails from '@/components/HdxBalanceDetails.vue';
 
@@ -131,10 +132,6 @@ export default defineComponent({
         if (!isValid) step1State.notClaimableAddress = false;
       }
     );
-    const getEthAddressWithPrefix = (rawAddress: string) => {
-      if (rawAddress.indexOf('0x') === 0) return rawAddress;
-      return `0x${rawAddress}`;
-    };
 
     const onConnectMetamaskClick = async () => {
       try {

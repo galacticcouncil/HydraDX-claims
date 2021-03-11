@@ -22,3 +22,9 @@ export const getHydraDxFormattedAddress: (
 ) => string = address => {
   return cryptoUtil.encodeAddress(address, 63);
 };
+
+export const getEthAddressWithPrefix = (rawAddress: string) => {
+  if (rawAddress.indexOf('0x') === 0 || rawAddress.indexOf('0X') === 0)
+    return rawAddress;
+  return `0x${rawAddress}`;
+};
