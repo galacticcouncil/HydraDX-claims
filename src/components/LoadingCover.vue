@@ -21,9 +21,18 @@
     </div>
     <div
       v-show="
+        wizardState.tempDisabled
+      "
+    >
+      <p>Due to the Genesis 2 transition of the HydraDX Snakenet the transactions are temporarily disabled which also prevents you from claiming.</p>
+      <p>Check for updates <a href="https://twitter.com/hydra_dx" title="Twitter"><u>on our twitter</u></a>.</p>
+    </div>
+    <div
+      v-show="
         wizardState.loading &&
         !wizardState.isReconnectBtn &&
-        !wizardState.claiming.inProgress
+        !wizardState.claiming.inProgress &&
+        !wizardState.tempDisabled
       "
     >
       Loading ...
