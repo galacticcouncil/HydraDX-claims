@@ -96,6 +96,7 @@ interface WizardState {
     open: boolean;
     message: string;
   };
+  tempDisabled: boolean;
 }
 interface EthAccountData {
   isMetamaskAvailable: boolean;
@@ -143,6 +144,7 @@ export default defineComponent({
         message: '',
       },
       isReconnectBtn: false,
+      tempDisabled: true,
     } as WizardState);
 
     const ethAccountData = reactive({
@@ -258,7 +260,7 @@ export default defineComponent({
       wizardState.wizardStep = step;
     };
     const setGlobalNotice = (open: boolean, message: string = '') => {
-      wizardState.globalNotice = { open, message };
+      wizardState.globalNotice = {open, message};
     };
 
     const initPolkadotApiInstanceWrapper = async () => {
@@ -299,6 +301,10 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      if (wizardState.tempDisabled) {
+        return;
+      }
+
       if (
         // @ts-ignore
         typeof window.ethereum !== 'undefined' &&
