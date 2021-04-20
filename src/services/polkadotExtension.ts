@@ -226,7 +226,7 @@ export const initPolkadotExtension: (
 
 export const getHydraDxAccountsFromExtension: () => Promise<
   InjectedAccountWithMeta[]
-> = async () => {
+  > = async () => {
   if (!extStore.extensions[0]) return [];
 
   const allAccounts: InjectedAccountWithMeta[] = await web3Accounts();
@@ -234,7 +234,9 @@ export const getHydraDxAccountsFromExtension: () => Promise<
   return allAccounts.filter(account => {
     return (
       account.meta.genesisHash &&
-      extStore.genesisHash === account.meta.genesisHash
+      (extStore.genesisHash === account.meta.genesisHash ||
+        account.meta.genesisHash ===
+        '0x0ed32bfcab4a83517fac88f2aa7cbc2f88d3ab93be9a12b6188a036bf8a943c2')
     );
   });
 };
