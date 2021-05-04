@@ -144,7 +144,7 @@ export default defineComponent({
         message: '',
       },
       isReconnectBtn: false,
-      tempDisabled: false,
+      tempDisabled: true,
     } as WizardState);
 
     const ethAccountData = reactive({
