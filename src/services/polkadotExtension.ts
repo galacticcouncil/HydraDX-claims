@@ -236,7 +236,11 @@ export const getHydraDxAccountsFromExtension: () => Promise<
       account.meta.genesisHash &&
       (extStore.genesisHash === account.meta.genesisHash ||
         account.meta.genesisHash ===
-        '0x0ed32bfcab4a83517fac88f2aa7cbc2f88d3ab93be9a12b6188a036bf8a943c2')
+        '0x0ed32bfcab4a83517fac88f2aa7cbc2f88d3ab93be9a12b6188a036bf8a943c2' ||
+        account.meta.genesisHash ===
+        '0xd2a620c27ec5cbc5621ff9a522689895074f7cca0d08e7134a7804e1a3ba86fc' ||
+        account.meta.genesisHash ===
+        '0x10af6e84234477d84dc572bac0789813b254aa490767ed06fb9591191d1073f9')
     );
   });
 };
