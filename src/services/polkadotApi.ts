@@ -118,6 +118,10 @@ export const setApiConnection = (
         LookupSource: 'AccountId',
         CurrencyId: 'AssetId',
         CurrencyIdOf: 'AssetId',
+        Fee: {
+          numerator: 'u32',
+          denominator: 'u32'
+        },
         BalanceInfo: {
           amount: 'Balance',
           assetId: 'AssetId',
