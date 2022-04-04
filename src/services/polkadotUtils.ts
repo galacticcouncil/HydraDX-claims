@@ -34,8 +34,7 @@ export const getClaimableHdxAmountByAddress: (
   address: string
 ) => Promise<string> = async (address = '') => {
   try {
-    const balance = await polkadotApiInstance.query.claims.claims(address);
-    return balance.toString();
+    return String(await polkadotApiInstance.query.claims.claims(address));
   } catch (e) {
     console.log(e);
     return '0';
@@ -123,7 +122,7 @@ export const accountToHex: (address: string) => string = address => {
   return u8aToHex(keyring.decodeAddress(address));
 };
 
-export const getCurrentBlockNumber: () => Promise<BlockNumber | null> = async () => {
+export const getCurrentBlockNumber: () => Promise<any> = async () => {
   if (!polkadotApiInstance) return null;
   return await polkadotApiInstance.query.system.number();
 };
@@ -137,6 +136,7 @@ export const getHydraDxIdentityBalanceByAddress: (
     );
     if (!baseTokenInfo) return '0';
 
+    // @ts-ignore
     return new BigNumber(baseTokenInfo.data.free.toString())
       .div(1000000000000)
       .decimalPlaces(4)

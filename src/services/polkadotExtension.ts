@@ -182,14 +182,14 @@ export const initPolkadotExtension: (
     extStore.extensions = await getKnown(api, injectedExt);
     extStore.genesisHash = api.genesisHash.toHex();
     const filteredExts: Extensions = await filterAll(api, extStore.extensions);
-    const systemChain = await api.rpc.system.chain();
+    const systemChain = String(await api.rpc.system.chain());
 
     // Check if user should update metadata : if current metadata of extension is empty
     // or check spec version in extension and api by genesisHash (api.genesisHash.toHex(),)
 
     if (filteredExts.count > 0) {
       const chainInfo = {
-        chain: systemChain.toString(),
+        chain: systemChain,
         color: '#f653a2',
         genesisHash: extStore.genesisHash,
         icon: 'substrate',
@@ -202,7 +202,7 @@ export const initPolkadotExtension: (
         tokenSymbol: api.registry.chainTokens[0],
         types: getSpecTypes(
           api.registry,
-          systemChain.toString(),
+          systemChain,
           api.runtimeVersion.specName,
           api.runtimeVersion.specVersion
         ),

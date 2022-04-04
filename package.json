@@ -8,8 +8,8 @@
     "dev": "vue-cli-service serve"
   },
   "dependencies": {
-    "@polkadot/api": "^4.11.2",
-    "@polkadot/extension-dapp": "^0.38.1",
+    "@polkadot/api": "^7.15.1",
+    "@polkadot/extension-dapp": "^0.42.10",
     "@types/clipboard": "^2.0.1",
     "@types/lodash": "^4.14.168",
     "@types/lodash.lowercase": "^4.3.6",
@@ -27,6 +27,7 @@
     "web3": "^1.3.4"
   },
   "devDependencies": {
+    "@open-wc/webpack-import-meta-loader": "^0.4.7",
     "@types/jest": "^24.0.19",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
@@ -48,7 +49,7 @@
     "node-sass": "^4.12.0",
     "prettier": "^2.2.1",
     "sass-loader": "^8.0.2",
-    "typescript": "^4.1.3",
+    "typescript": "^4.2.4",
     "vue-jest": "^5.0.0-0"
   }
 }

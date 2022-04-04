@@ -9,6 +9,10 @@ module.exports = {
     module: {
       rules: [
         {
+          test: /\.js$/,
+          loader: require.resolve('@open-wc/webpack-import-meta-loader'),
+        },
+        {
           test: /\.mjs$/,
           include: /node_modules/,
           type: 'javascript/auto',
