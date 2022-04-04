@@ -219,7 +219,7 @@ export const initPolkadotExtension: (
     successCb(extStore.extensions[0]);
     return extStore.extensions[0];
   } catch (e) {
-    errorCb(e);
+    errorCb(e as any);
     return null;
   }
 };
