@@ -6,7 +6,8 @@ const local =
   window.location.hostname === 'localhost';
 
 const nodeAddress = local
-  ? 'ws://127.0.0.1:9944'
+  // ? 'ws://127.0.0.1:9944'
+  ?  'wss://rpc-03.snakenet.hydradx.io'
   : 'wss://rpc-03.snakenet.hydradx.io';
 
 let polkadotApiInstance: ApiPromise;

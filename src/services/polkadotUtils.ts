@@ -123,7 +123,7 @@ export const accountToHex: (address: string) => string = address => {
   return u8aToHex(keyring.decodeAddress(address));
 };
 
-export const getCurrentBlockNumber: () => Promise<BlockNumber | null> = async () => {
+export const getCurrentBlockNumber: () => Promise<any | null> = async () => {
   if (!polkadotApiInstance) return null;
   return await polkadotApiInstance.query.system.number();
 };
@@ -132,7 +132,7 @@ export const getHydraDxIdentityBalanceByAddress: (
   address: string
 ) => Promise<string> = async address => {
   try {
-    const baseTokenInfo = await polkadotApiInstance.query.system.account(
+    const baseTokenInfo: any = await polkadotApiInstance.query.system.account(
       address
     );
     if (!baseTokenInfo) return '0';
