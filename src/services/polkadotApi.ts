@@ -6,8 +6,8 @@ const local =
   window.location.hostname === 'localhost';
 
 const nodeAddress = local
-  // ? 'ws://127.0.0.1:9944'
-  ?  'wss://rpc-03.snakenet.hydradx.io'
+  ? // ? 'ws://127.0.0.1:9944'
+    'wss://rpc-03.snakenet.hydradx.io'
   : 'wss://rpc-03.snakenet.hydradx.io';
 
 let polkadotApiInstance: ApiPromise;
@@ -121,7 +121,7 @@ export const setApiConnection = (
         CurrencyIdOf: 'AssetId',
         Fee: {
           numerator: 'u32',
-          denominator: 'u32'
+          denominator: 'u32',
         },
         BalanceInfo: {
           amount: 'Balance',

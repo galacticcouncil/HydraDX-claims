@@ -148,6 +148,7 @@ export default defineComponent({
           return;
         }
         step1State.notClaimableAddress = false;
+        if (!props.onConnectEthAccount) return;
         props.onConnectEthAccount(account[0], 'metamask');
       } catch (e) {
         console.log(e);
@@ -166,6 +167,7 @@ export default defineComponent({
           return;
         }
         step1State.notClaimableAddress = false;
+        if (!props.onConnectEthAccount) return;
         props.onConnectEthAccount(
           getEthAddressWithPrefix(step1State.manuallyEnteredAccount),
           'manual'

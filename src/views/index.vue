@@ -210,10 +210,7 @@ export default defineComponent({
       return wizardState.stepValidationStatus[wizardState.wizardStep - 1];
     });
 
-    const onConnectEthAccount = async (
-      account: string,
-      method: string
-    ) => {
+    const onConnectEthAccount = async (account: string, method: string) => {
       ethAccountData.xhdxBoughtBalance = await getXhdxAmountByAddress(
         account,
         'bought'
@@ -260,7 +257,7 @@ export default defineComponent({
       wizardState.wizardStep = step;
     };
     const setGlobalNotice = (open: boolean, message: string = '') => {
-      wizardState.globalNotice = {open, message};
+      wizardState.globalNotice = { open, message };
     };
 
     const initPolkadotApiInstanceWrapper = async () => {

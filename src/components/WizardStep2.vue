@@ -194,6 +194,7 @@ export default defineComponent({
           );
           props.goToStep(2);
           step2State.selectedAccount = null;
+          if (!props.onConnectHdxAccount) return;
           props.onConnectHdxAccount(null);
           setTimeout(() => {
             props.setGlobalNotice(false);
@@ -215,6 +216,7 @@ export default defineComponent({
 
     const connectPdAccount = async () => {
       if (!step2State.selectedAccount) return;
+      if (!props.onConnectHdxAccount) return;
       props.onConnectHdxAccount(step2State.selectedAccount);
       step2State.openAccountsList = false;
     };
