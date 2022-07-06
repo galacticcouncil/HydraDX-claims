@@ -1,9 +1,9 @@
 <template>
   <div class="hdx-amount-indicator">
     <div class="total-amount">
-      HDX to Claim before 3x: {{ hdxClaimableAmountFormatted.base }} HDX
+      Unclaimed HDX: {{ hdxClaimableAmountFormatted.base }} HDX
       <br />
-      HDX to Claim after 3x: {{ hdxClaimableAmountFormatted.tripled }} HDX
+      Unclaimed HDX 3x: {{ hdxClaimableAmountFormatted.tripled }} HDX
     </div>
   </div>
 </template>
