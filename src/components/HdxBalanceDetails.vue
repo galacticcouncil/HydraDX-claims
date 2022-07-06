@@ -1,7 +1,9 @@
 <template>
   <div class="hdx-amount-indicator">
     <div class="total-amount">
-      HDX to Claim: {{ hdxClaimableAmountFormatted }} HDX
+      HDX to Claim before 3x: {{ hdxClaimableAmountFormatted.base }} HDX
+      <br />
+      HDX to Claim after 3x: {{ hdxClaimableAmountFormatted.tripled }} HDX
     </div>
   </div>
 </template>
@@ -9,6 +11,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { getFormattedBalance } from '@/services/utils';
+import { BigNumber } from 'bignumber.js';
 
 export default defineComponent({
   name: 'HdxBalanceDetails',
@@ -23,12 +26,19 @@ export default defineComponent({
   setup(props) {
     const hdxClaimableAmountFormatted = computed(() => {
       if (!props.ethAccountData.isClaimableHdxAmountZero) {
-        return getFormattedBalance(
-          props.ethAccountData.claimableHdxAmount,
-          true
-        );
+        return {
+          base: getFormattedBalance(
+            props.ethAccountData.claimableHdxAmount,
+            true
+          ),
+          tripled: new BigNumber(
+            getFormattedBalance(props.ethAccountData.claimableHdxAmount, true)
+          )
+            .multipliedBy(3)
+            .toString(),
+        };
       }
-      return '0';
+      return { base: '0', tripled: '0' };
     });
 
     return {
