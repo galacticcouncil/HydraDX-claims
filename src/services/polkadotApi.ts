@@ -1,11 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import type { ApiListeners } from '@/types';
 
-const local =
-  window.location.hostname === '127.0.0.1' ||
-  window.location.hostname === 'localhost';
-
-const nodeAddress = 'wss://rpc-01.hydradx.io';
+const nodeAddress = 'wss://hydradx-rpc.dwellir.com';
 
 let polkadotApiInstance: ApiPromise;
 
