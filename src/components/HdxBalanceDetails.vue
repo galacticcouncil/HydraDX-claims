@@ -11,7 +11,6 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { getFormattedBalance } from '@/services/utils';
-import { BigNumber } from 'bignumber.js';
 
 export default defineComponent({
   name: 'HdxBalanceDetails',
@@ -27,15 +26,8 @@ export default defineComponent({
     const hdxClaimableAmountFormatted = computed(() => {
       if (!props.ethAccountData.isClaimableHdxAmountZero) {
         return {
-          base: getFormattedBalance(
-            props.ethAccountData.claimableHdxAmount,
-            true
-          ),
-          tripled: new BigNumber(
-            getFormattedBalance(props.ethAccountData.claimableHdxAmount, true)
-          )
-            .multipliedBy(3)
-            .toString(),
+          base: getFormattedBalance(props.ethAccountData.xhdxTotalBalance),
+          tripled: getFormattedBalance(props.ethAccountData.claimableHdxAmount, true)
         };
       }
       return { base: '0', tripled: '0' };
