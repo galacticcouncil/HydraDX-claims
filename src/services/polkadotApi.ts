@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import type { ApiListeners } from '@/types';
 
-const nodeAddress = 'wss://hydradx-rpc.dwellir.com';
+const nodeAddress = 'wss://hydration-rpc.n.dwellir.com';
 
 let polkadotApiInstance: ApiPromise;
 
