@@ -80,10 +80,9 @@ function hasCurrentProperties(
     return true;
   }
 
-  //@ts-ignore
-  const { ss58Format, tokenDecimals, tokenSymbol } = allProperties[
-    extension.name
-  ];
+  const { ss58Format, tokenDecimals, tokenSymbol } =
+    //@ts-ignore
+    allProperties[extension.name];
 
   return (
     ss58Format === api.registry.chainSS58 &&
@@ -232,16 +231,7 @@ export const getHydraDxAccountsFromExtension: () => Promise<
   const allAccounts: InjectedAccountWithMeta[] = await web3Accounts();
 
   return allAccounts.filter(account => {
-    return (
-      account.meta.genesisHash &&
-      (extStore.genesisHash === account.meta.genesisHash ||
-        account.meta.genesisHash ===
-          '0x0ed32bfcab4a83517fac88f2aa7cbc2f88d3ab93be9a12b6188a036bf8a943c2' ||
-        account.meta.genesisHash ===
-          '0xd2a620c27ec5cbc5621ff9a522689895074f7cca0d08e7134a7804e1a3ba86fc' ||
-        account.meta.genesisHash ===
-          '0x10af6e84234477d84dc572bac0789813b254aa490767ed06fb9591191d1073f9')
-    );
+    return true;
   });
 };
 

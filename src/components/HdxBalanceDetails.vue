@@ -1,9 +1,12 @@
 <template>
   <div class="hdx-amount-indicator">
-    <div class="total-amount">
+    <div class="total-amount" v-show="hdxClaimableAmountFormatted.base != '0'">
       Unclaimed HDX: {{ hdxClaimableAmountFormatted.base }} HDX
       <br />
       Unclaimed HDX 3x: {{ hdxClaimableAmountFormatted.tripled }} HDX
+    </div>
+    <div class="total-amount" v-show="hdxClaimableAmountFormatted.base == '0'">
+      HDX Already claimed
     </div>
   </div>
 </template>
@@ -27,7 +30,10 @@ export default defineComponent({
       if (!props.ethAccountData.isClaimableHdxAmountZero) {
         return {
           base: getFormattedBalance(props.ethAccountData.xhdxTotalBalance),
-          tripled: getFormattedBalance(props.ethAccountData.claimableHdxAmount, true)
+          tripled: getFormattedBalance(
+            props.ethAccountData.claimableHdxAmount,
+            true
+          ),
         };
       }
       return { base: '0', tripled: '0' };
